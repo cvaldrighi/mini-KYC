@@ -1,0 +1,135 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Tokens de design. Os nomes seguem o padrão do shadcn/ui (background, primary, muted...),
+ * para que os componentes adicionados com `npx shadcn add` já usem as nossas cores.
+ * Paleta: papel de segurança (fundo), tinta de impressão (texto) e guilhoché (destaque).
+ */
+:root {
+  --radius: 0.625rem;
+
+  --background: #f2f4f1;
+  --foreground: #18222e;
+  --card: #ffffff;
+  --card-foreground: #18222e;
+  --popover: #ffffff;
+  --popover-foreground: #18222e;
+  --primary: #2c6e6a;
+  --primary-foreground: #ffffff;
+  --secondary: #e7ece6;
+  --secondary-foreground: #18222e;
+  --muted: #e7ece6;
+  --muted-foreground: #4a5562;
+  --accent: #e7ece6;
+  --accent-foreground: #18222e;
+  --destructive: #b3261e;
+  --border: #d5dcd4;
+  --input: #d5dcd4;
+  --ring: #2c6e6a;
+
+  --dropzone: #f7f9f6;
+
+  --status-pending: #3e4a57;
+  --status-pending-bg: #e6eaee;
+  --status-pending-border: #c5cdd5;
+  --status-approved: #1f6b3e;
+  --status-approved-bg: #e1efe6;
+  --status-approved-border: #a9cfb7;
+  --status-rejected: #a3221b;
+  --status-rejected-bg: #fbe9e7;
+  --status-rejected-border: #ebbdb8;
+  --status-review: #7f5300;
+  --status-review-bg: #fbf0dc;
+  --status-review-border: #e5c98f;
+}
+
+.dark {
+  --background: #18222e;
+  --foreground: #f2f4f1;
+  --card: #202c39;
+  --card-foreground: #f2f4f1;
+  --popover: #202c39;
+  --popover-foreground: #f2f4f1;
+  --primary: #6fb8b1;
+  --primary-foreground: #0f1a20;
+  --secondary: #26323f;
+  --secondary-foreground: #f2f4f1;
+  --muted: #26323f;
+  --muted-foreground: #a9b4bf;
+  --accent: #26323f;
+  --accent-foreground: #f2f4f1;
+  --destructive: #f08a82;
+  --border: #2e3b49;
+  --input: #33414f;
+  --ring: #6fb8b1;
+
+  --dropzone: #1c2834;
+
+  --status-pending: #c3ccd5;
+  --status-pending-bg: #26323f;
+  --status-pending-border: #3a4856;
+  --status-approved: #7ed39f;
+  --status-approved-bg: #1f3a2c;
+  --status-approved-border: #2f5a42;
+  --status-rejected: #f5978f;
+  --status-rejected-bg: #3e2226;
+  --status-rejected-border: #63353a;
+  --status-review: #ebbe68;
+  --status-review-bg: #3a2f1a;
+  --status-review-border: #5e4a23;
+}
+
+@theme inline {
+  --font-sans: 'Schibsted Grotesk', ui-sans-serif, system-ui, sans-serif;
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-dropzone: var(--dropzone);
+
+  --color-status-pending: var(--status-pending);
+  --color-status-pending-bg: var(--status-pending-bg);
+  --color-status-pending-border: var(--status-pending-border);
+  --color-status-approved: var(--status-approved);
+  --color-status-approved-bg: var(--status-approved-bg);
+  --color-status-approved-border: var(--status-approved-border);
+  --color-status-rejected: var(--status-rejected);
+  --color-status-rejected-bg: var(--status-rejected-bg);
+  --color-status-rejected-border: var(--status-rejected-border);
+  --color-status-review: var(--status-review);
+  --color-status-review-bg: var(--status-review-bg);
+  --color-status-review-border: var(--status-review-border);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-variant-numeric: tabular-nums;
+  }
+}
