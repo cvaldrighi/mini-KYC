@@ -1,0 +1,22 @@
+schema: spec-driven
+
+context: |
+  Projeto de estudo pessoal (portfólio) para praticar React, AWS serverless e NoSQL,
+  simulando um fluxo simplificado de KYC (validação automática de documentos enviados).
+  Escrever todos os artefatos em português do Brasil. Manter em inglês apenas as palavras-chave
+  que o OpenSpec exige (Requirement, Scenario, WHEN, THEN, AND, SHALL, MUST) e nomes de código.
+  Stack fixa: TypeScript em tudo; frontend React + Vite; backend Node.js 22 em AWS Lambda;
+  armazenamento em S3 e DynamoDB; logs no CloudWatch; infraestrutura com AWS SAM.
+  Testes com Jest (backend) e Jest + React Testing Library (frontend).
+  Custo deve caber no AWS Free Tier: nada de API Gateway, NAT, RDS ou serviços pagos por hora.
+  Sem IA no MVP: a verificação usa apenas checagens determinísticas sobre o arquivo.
+  Revisão manual e verificação por IA são evoluções futuras, fora deste escopo.
+  Escopo pequeno: o MVP deve ser implementável em poucos dias por uma pessoa.
+  Fluxo Git: todo trabalho em branch separada e PR; nunca commitar direto na master.
+
+rules:
+  proposal:
+    - Sempre declarar explicitamente o que está fora do escopo
+  tasks:
+    - Quebrar tarefas em blocos de no máximo 2 horas
+    - Cada grupo de tarefas deve terminar em algo testável
