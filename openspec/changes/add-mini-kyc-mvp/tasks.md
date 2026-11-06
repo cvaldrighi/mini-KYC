@@ -8,9 +8,9 @@
 ## 2. Frontend com API fake
 
 - [x] 2.1 Definir tipos de domínio (`Verification`, `VerificationStatus`, `Reason`, `CheckResult`) e a interface `VerificationsApi`
-- [ ] 2.2 Implementar `mockApi` em memória com atraso simulado, progresso de upload e transição de `PENDING` para os quatro status finais com motivo e checagens
-- [ ] 2.3 Criar o layout base (cabeçalho, duas colunas responsivas) e o `ThemeToggle`
-- [ ] 2.4 Implementar `StatusBadge` com texto, ícone e cor por status e o anúncio de mudança de status numa região `aria-live`, com testes
+- [x] 2.2 Implementar `mockApi` em memória com atraso simulado, progresso de upload e transição de `PENDING` para os quatro status finais com motivo e checagens
+- [x] 2.3 Criar o layout base (cabeçalho, duas colunas responsivas) e o `ThemeToggle`
+- [x] 2.4 Implementar `StatusBadge` com texto, ícone e cor por status e o anúncio de mudança de status numa região `aria-live`, com testes
 - [ ] 2.5 Implementar hook `useVerifications` com carregamento, erro, polling de 5 s e limpeza do intervalo, com teste do unmount
 - [ ] 2.6 Implementar `VerificationList` e `VerificationRow` com esqueleto, erro, vazio e data relativa, com teste
 - [ ] 2.7 Implementar `Dropzone` com arrastar e soltar, botões "Tirar foto" e "Escolher arquivo" no celular, validação, prévia e liberação da URL da prévia, com teste de arquivo inválido
