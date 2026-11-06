@@ -1,13 +1,13 @@
 ## 1. Base do repositório
 
-- [ ] 1.1 Criar `frontend/` com Vite + React + TypeScript e configurar Jest + React Testing Library + jsdom
-- [ ] 1.2 Configurar Tailwind CSS v4, shadcn/ui, a fonte e os tokens de cor dos temas claro e escuro
-- [ ] 1.3 Criar `backend/` com TypeScript, Jest + ts-jest e estrutura de pastas do design
-- [ ] 1.4 Atualizar o README com objetivo, arquitetura e como rodar
+- [x] 1.1 Criar `frontend/` com Vite + React + TypeScript e configurar Jest + React Testing Library + jsdom
+- [x] 1.2 Configurar Tailwind CSS v4, shadcn/ui, a fonte e os tokens de cor dos temas claro e escuro
+- [x] 1.3 Criar `backend/` com TypeScript, Jest + ts-jest e estrutura de pastas do design
+- [x] 1.4 Atualizar o README com objetivo, arquitetura e como rodar
 
 ## 2. Frontend com API fake
 
-- [ ] 2.1 Definir tipos de domínio (`Verification`, `VerificationStatus`, `Reason`, `CheckResult`) e a interface `VerificationsApi`
+- [x] 2.1 Definir tipos de domínio (`Verification`, `VerificationStatus`, `Reason`, `CheckResult`) e a interface `VerificationsApi`
 - [ ] 2.2 Implementar `mockApi` em memória com atraso simulado, progresso de upload e transição de `PENDING` para os quatro status finais com motivo e checagens
 - [ ] 2.3 Criar o layout base (cabeçalho, duas colunas responsivas) e o `ThemeToggle`
 - [ ] 2.4 Implementar `StatusBadge` com texto, ícone e cor por status e o anúncio de mudança de status numa região `aria-live`, com testes
