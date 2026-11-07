@@ -24,7 +24,7 @@
 ## 3. Pipeline de checagens (backend)
 
 - [x] 3.1 Definir tipos de domínio (`VerificationStatus`, `Reason`, `CheckResult`) e a interface `VerificationCheck`
-- [ ] 3.2 Implementar o pipeline que executa as checagens em ordem, para no primeiro resultado diferente de `PASS` e registra `checks` com `durationMs` e `details`, com testes
+- [x] 3.2 Implementar o pipeline que executa as checagens em ordem, para no primeiro resultado diferente de `PASS` e registra `checks` com `durationMs` e `details`, com testes
 - [ ] 3.3 Criar arquivos de exemplo em `fixtures/` (JPEG válido, PNG, PDF, imagem pequena, JPEG com EXIF do Photoshop, arquivo renomeado)
 - [ ] 3.4 Implementar checagens de tamanho e de tipo real (`file-type`), com testes
 - [ ] 3.5 Implementar checagem de resolução (`image-size`), com testes
