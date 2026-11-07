@@ -28,7 +28,7 @@
 - [x] 3.3 Criar arquivos de exemplo em `fixtures/` (JPEG válido, PNG, PDF, imagem pequena, JPEG com EXIF do Photoshop, arquivo renomeado)
 - [x] 3.4 Implementar checagens de tamanho e de tipo real (assinatura dos bytes), com testes
 - [x] 3.5 Implementar checagem de resolução (cabeçalhos PNG e JPEG), com testes
-- [ ] 3.6 Implementar checagem de sinal de edição (`exifr`), com testes
+- [x] 3.6 Implementar checagem de sinal de edição (`exifr`), com testes
 - [ ] 3.7 Implementar checagem de duplicidade com `HashRepository` e escrita condicional, com testes (primeiro envio, repetido, reprocessamento)
 
 ## 4. Infraestrutura (SAM)
