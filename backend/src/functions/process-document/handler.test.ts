@@ -21,6 +21,12 @@ function pending(overrides: Partial<VerificationRecord> = {}): VerificationRecor
   };
 }
 
+/** Relógio falso que avança 100 ms a cada leitura. */
+function fakeClock() {
+  let time = 0;
+  return () => (time += 100);
+}
+
 /** Pipeline real (todas as checagens), com o repositório de hashes e o download falsos. */
 function setupWithRealChecks(fixture: string, record = pending()) {
   const file = readFixture(fixture);
@@ -31,6 +37,8 @@ function setupWithRealChecks(fixture: string, record = pending()) {
     },
     checks: createChecks({ hashes: { claim: jest.fn().mockResolvedValue('CLAIMED') } }),
     download: jest.fn().mockResolvedValue(file),
+    recordCompleted: jest.fn(),
+    now: fakeClock(),
   };
   return { deps, file, handler: createHandler(deps) };
 }
@@ -94,6 +102,24 @@ describe('process-document', () => {
     expect(deps.download).not.toHaveBeenCalled();
   });
 
+  it('registra a métrica de conclusão com o status e a duração do pipeline', async () => {
+    const { deps, file, handler } = setupWithRealChecks('low-resolution.jpg');
+
+    await handler(s3Event('uploads/v1.jpg', file.length));
+
+    expect(deps.recordCompleted).toHaveBeenCalledWith('REJECTED', expect.any(Number));
+    expect(deps.recordCompleted).toHaveBeenCalledTimes(1);
+  });
+
+  it('não registra métrica quando outro processamento já gravou o resultado', async () => {
+    const { deps, file, handler } = setupWithRealChecks('valid.jpg');
+    deps.repository.updateIfPending.mockResolvedValue('ALREADY_PROCESSED');
+
+    await handler(s3Event('uploads/v1.jpg', file.length));
+
+    expect(deps.recordCompleted).not.toHaveBeenCalled();
+  });
+
   it('ignora sem erro quando a verificação não existe', async () => {
     const { deps, handler } = setupWithRealChecks('valid.jpg');
     deps.repository.get.mockResolvedValue(null);
@@ -135,6 +161,7 @@ describe('process-document', () => {
       repository: { get: jest.fn().mockResolvedValue(pending()), updateIfPending: jest.fn().mockResolvedValue('UPDATED') },
       checks: [broken],
       download: jest.fn(),
+      recordCompleted: jest.fn(),
     };
 
     await createHandler(deps)(s3Event('uploads/v1.jpg', 200_000));

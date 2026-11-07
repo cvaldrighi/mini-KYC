@@ -34,6 +34,7 @@ Globals:
         DOCUMENT_HASHES_TABLE: !Ref DocumentHashesTable
         POWERTOOLS_SERVICE_NAME: mini-kyc
         POWERTOOLS_LOG_LEVEL: INFO
+        POWERTOOLS_METRICS_NAMESPACE: MiniKyc
         # Erros no CloudWatch apontam a linha do .ts, não do .js empacotado.
         NODE_OPTIONS: --enable-source-maps
 
