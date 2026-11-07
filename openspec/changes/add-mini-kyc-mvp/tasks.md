@@ -37,7 +37,7 @@
 - [x] 4.2 Escrever `template.yaml` com bucket privado (CORS, criptografia, lifecycle de 7 dias), tabela `Verifications` com GSI e TTL, e tabela `DocumentHashes` com TTL
 - [x] 4.3 Declarar as três Lambdas (Node.js 22, esbuild), Function URLs com CORS, evento S3 no prefixo `uploads/`, permissões IAM mínimas e log groups com retenção de 7 dias
 - [x] 4.4 Declarar alarme de erros na função de processamento
-- [ ] 4.5 Primeiro deploy com `sam deploy --guided` e validar recursos no console
+- [x] 4.5 Primeiro deploy com `sam deploy --guided` e validar recursos no console
 
 ## 5. Lambda create-verification
 
