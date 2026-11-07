@@ -29,10 +29,18 @@ const verifications: Verification[] = [
 
 function renderList(props: Partial<Parameters<typeof VerificationList>[0]> = {}) {
   const onRetry = jest.fn();
+  const onSelect = jest.fn();
   render(
-    <VerificationList verifications={[]} isLoading={false} error={null} onRetry={onRetry} {...props} />,
+    <VerificationList
+      verifications={[]}
+      isLoading={false}
+      error={null}
+      onRetry={onRetry}
+      onSelect={onSelect}
+      {...props}
+    />,
   );
-  return { onRetry };
+  return { onRetry, onSelect };
 }
 
 describe('VerificationList', () => {
@@ -58,6 +66,14 @@ describe('VerificationList', () => {
     expect(within(items[1]).getByText('Reprovado')).toBeInTheDocument();
     expect(within(items[1]).getAllByText('há 4 min').length).toBeGreaterThan(0);
     jest.useRealTimers();
+  });
+
+  it('abre o detalhe ao clicar na linha', async () => {
+    const { onSelect } = renderList({ verifications });
+
+    await userEvent.click(screen.getByRole('button', { name: /rg-verso\.png/ }));
+
+    expect(onSelect).toHaveBeenCalledWith(verifications[1], expect.any(HTMLButtonElement));
   });
 
   it('mostra o estado vazio', () => {

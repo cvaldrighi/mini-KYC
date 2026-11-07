@@ -8,11 +8,12 @@ interface VerificationListProps {
   isLoading: boolean;
   error: Error | null;
   onRetry: () => void;
+  onSelect: (verification: Verification, trigger: HTMLElement) => void;
 }
 
 const SKELETON_ROWS = 4;
 
-export function VerificationList({ verifications, isLoading, error, onRetry }: VerificationListProps) {
+export function VerificationList({ verifications, isLoading, error, onRetry, onSelect }: VerificationListProps) {
   if (isLoading) {
     return (
       <div aria-busy="true">
@@ -79,7 +80,7 @@ export function VerificationList({ verifications, isLoading, error, onRetry }: V
       </div>
       <ul aria-label="Verificações enviadas">
         {verifications.map((verification) => (
-          <VerificationRow key={verification.verificationId} verification={verification} />
+          <VerificationRow key={verification.verificationId} verification={verification} onSelect={onSelect} />
         ))}
       </ul>
     </div>

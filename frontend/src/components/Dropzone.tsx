@@ -1,12 +1,19 @@
 import { Camera, Upload } from 'lucide-react';
-import { useId, useRef, useState, type ChangeEvent, type DragEvent } from 'react';
+import { useId, useImperativeHandle, useRef, useState, type ChangeEvent, type DragEvent, type Ref } from 'react';
 import { ACCEPTED_CONTENT_TYPES } from '@/domain/verification';
 import { cn } from '@/lib/utils';
 import { validateFile } from '@/lib/validateFile';
 import { FilePreview } from './FilePreview';
 import { GuillochePattern } from './GuillochePattern';
 
+/** Ações que o componente pai pode disparar (via `ref`). */
+export interface DropzoneHandle {
+  /** Leva o foco para a área de envio e abre o seletor de arquivo. */
+  openFilePicker: () => void;
+}
+
 interface DropzoneProps {
+  ref?: Ref<DropzoneHandle>;
   file: File | null;
   /** Chamado só com arquivos válidos (tipo e tamanho). */
   onFileSelect: (file: File) => void;
@@ -25,12 +32,24 @@ const buttonBase =
  * que abre a câmera traseira, e "Escolher arquivo". São dois inputs porque, em alguns
  * navegadores, o atributo `capture` esconde a opção de escolher um arquivo existente.
  */
-export function Dropzone({ file, onFileSelect, onClear, disabled = false }: DropzoneProps) {
+export function Dropzone({ ref, file, onFileSelect, onClear, disabled = false }: DropzoneProps) {
+  const zoneRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const errorId = useId();
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      openFilePicker() {
+        zoneRef.current?.focus();
+        fileInputRef.current?.click();
+      },
+    }),
+    [],
+  );
 
   function handleFile(candidate: File | undefined) {
     if (!candidate) return;
@@ -70,6 +89,8 @@ export function Dropzone({ file, onFileSelect, onClear, disabled = false }: Drop
   return (
     <div className="flex flex-col gap-3">
       <div
+        ref={zoneRef}
+        tabIndex={-1}
         role="group"
         aria-label="Área de envio do documento"
         aria-describedby={error ? errorId : undefined}
@@ -80,6 +101,7 @@ export function Dropzone({ file, onFileSelect, onClear, disabled = false }: Drop
         onDrop={handleDrop}
         className={cn(
           'relative aspect-[85.6/54] overflow-hidden rounded-2xl border-[1.5px] border-dashed border-primary bg-dropzone transition-colors',
+          'focus:outline-2 focus:outline-offset-2 focus:outline-ring',
           'data-[dragging]:border-solid data-[dragging]:bg-secondary',
           error && 'border-destructive',
           disabled && 'opacity-60',
