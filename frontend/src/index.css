@@ -155,3 +155,15 @@
     cursor: pointer;
   }
 }
+
+/*
+ * Com "reduzir movimento" ligado no sistema, o painel de detalhe aparece sem deslizar.
+ * `!important` porque as classes de animação do Sheet usam seletores de atributo
+ * (data-[state=open]), mais específicos que uma classe simples.
+ */
+@media (prefers-reduced-motion: reduce) {
+  [data-slot='sheet-content'],
+  [data-slot='sheet-overlay'] {
+    animation: none !important;
+  }
+}

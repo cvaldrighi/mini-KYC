@@ -153,13 +153,17 @@ export function Dropzone({ ref, file, onFileSelect, onClear, disabled = false }:
           </div>
         </div>
 
+        {/*
+          Inputs nativos escondidos (display: none): ficam fora do Tab e dos leitores de tela,
+          que usam os botões visíveis acima. O clique programático continua funcionando.
+        */}
         <input
           ref={fileInputRef}
           type="file"
           accept={ACCEPT}
           tabIndex={-1}
           aria-label="Escolher arquivo do documento"
-          className="sr-only"
+          className="hidden"
           onChange={handleInputChange}
           disabled={disabled}
         />
@@ -170,7 +174,7 @@ export function Dropzone({ ref, file, onFileSelect, onClear, disabled = false }:
           capture="environment"
           tabIndex={-1}
           aria-label="Tirar foto do documento"
-          className="sr-only"
+          className="hidden"
           onChange={handleInputChange}
           disabled={disabled}
         />
