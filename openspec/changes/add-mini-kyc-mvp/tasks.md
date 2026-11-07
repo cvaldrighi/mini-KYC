@@ -29,7 +29,7 @@
 - [x] 3.4 Implementar checagens de tamanho e de tipo real (assinatura dos bytes), com testes
 - [x] 3.5 Implementar checagem de resolução (cabeçalhos PNG e JPEG), com testes
 - [x] 3.6 Implementar checagem de sinal de edição (`exifr`), com testes
-- [ ] 3.7 Implementar checagem de duplicidade com `HashRepository` e escrita condicional, com testes (primeiro envio, repetido, reprocessamento)
+- [x] 3.7 Implementar checagem de duplicidade com `HashRepository` e escrita condicional, com testes (primeiro envio, repetido, reprocessamento)
 
 ## 4. Infraestrutura (SAM)
 
