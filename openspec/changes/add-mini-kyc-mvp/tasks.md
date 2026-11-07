@@ -18,8 +18,8 @@
 - [x] 2.9 Implementar `reasonMessages` (título e explicação por motivo, usando `details`), com testes
 - [x] 2.10 Implementar `VerificationSheet` com `ChecksTimeline`, explicação e botão "Enviar outra foto" para reprovadas, com testes de abrir, fechar com Esc, foco e o botão
 - [x] 2.11 Desenhar o padrão de guilhoché em SVG para a área de envio
-- [ ] 2.12 Revisar responsividade (360 px), navegação por teclado e contraste nos dois temas
-- [ ] 2.13 Montar `App` e escolher a implementação da API por `VITE_API_MODE`
+- [x] 2.12 Revisar responsividade (360 px), navegação por teclado e contraste nos dois temas
+- [x] 2.13 Montar `App` e escolher a implementação da API por `VITE_API_MODE`
 
 ## 3. Pipeline de checagens (backend)
 
@@ -59,7 +59,7 @@
 
 ## 8. Integração ponta a ponta
 
-- [ ] 8.1 Implementar `awsApi` no frontend usando as Function URLs (via `.env`)
+- [x] 8.1 Implementar `awsApi` no frontend usando as Function URLs (via `.env`)
 - [ ] 8.2 Deploy e teste manual com os arquivos de `fixtures/` (incluindo enviar o mesmo arquivo duas vezes), conferindo cada status e motivo
 
 ## 9. Observabilidade (CloudWatch)
