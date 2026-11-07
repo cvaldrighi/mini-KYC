@@ -53,7 +53,7 @@
 
 ## 7. Lambda list-verifications
 
-- [ ] 7.1 Implementar `VerificationRepository.listByCreatedAt` com cursor base64url
+- [x] 7.1 Implementar `VerificationRepository.listByCreatedAt` com cursor base64url
 - [ ] 7.2 Implementar handler com validação de `limit` e `cursor` e mapeamento sem `fileKey`
 - [ ] 7.3 Testes: listagem, paginação, lista vazia e parâmetros inválidos
 

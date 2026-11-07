@@ -1,8 +1,10 @@
 import { ConditionalCheckFailedException } from '@aws-sdk/client-dynamodb';
-import { GetCommand, PutCommand, UpdateCommand, type DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
+import { GetCommand, PutCommand, QueryCommand, UpdateCommand, type DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
 import type { AcceptedContentType, CheckResult, Reason, VerificationStatus } from '../domain/verification';
+import { decodeCursor, encodeCursor } from './cursor';
 
 const ENTITY_TYPE = 'VERIFICATION';
+const CREATED_AT_INDEX = 'byCreatedAt';
 /** Registros (e os arquivos no S3) são apagados depois de 7 dias pelo TTL do DynamoDB. */
 const RETENTION_SECONDS = 7 * 24 * 60 * 60;
 
@@ -36,6 +38,11 @@ export interface VerificationOutcome {
   checks: CheckResult[];
 }
 
+export interface VerificationPage {
+  items: VerificationRecord[];
+  nextCursor: string | null;
+}
+
 export class VerificationRepository {
   constructor(
     private readonly client: DynamoDBDocumentClient,
@@ -67,6 +74,33 @@ export class VerificationRepository {
   async get(verificationId: string): Promise<VerificationRecord | null> {
     const { Item } = await this.client.send(new GetCommand({ TableName: this.tableName, Key: { verificationId } }));
     return (Item as VerificationRecord | undefined) ?? null;
+  }
+
+  /**
+   * Lista da mais recente para a mais antiga com uma `Query` no GSI `byCreatedAt`
+   * (partition key `entityType`, sort key `createdAt`), e não com `Scan`: lê só a página
+   * pedida, já ordenada pelo DynamoDB.
+   *
+   * Lança `InvalidCursorError` se o cursor não for válido.
+   */
+  async listByCreatedAt({ limit, cursor }: { limit: number; cursor?: string | null }): Promise<VerificationPage> {
+    const { Items = [], LastEvaluatedKey } = await this.client.send(
+      new QueryCommand({
+        TableName: this.tableName,
+        IndexName: CREATED_AT_INDEX,
+        KeyConditionExpression: 'entityType = :entityType',
+        ExpressionAttributeValues: { ':entityType': ENTITY_TYPE },
+        ScanIndexForward: false, // ordem decrescente de createdAt
+        Limit: limit,
+        ExclusiveStartKey: cursor ? decodeCursor(cursor) : undefined,
+      }),
+    );
+    return {
+      items: Items as VerificationRecord[],
+      // O DynamoDB devolve LastEvaluatedKey sempre que a página enche, mesmo se não houver mais
+      // itens; nesse caso a próxima página vem vazia e com nextCursor null.
+      nextCursor: LastEvaluatedKey ? encodeCursor(LastEvaluatedKey) : null,
+    };
   }
 
   /**

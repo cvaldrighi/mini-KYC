@@ -1,6 +1,7 @@
 import { ConditionalCheckFailedException, DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, GetCommand, PutCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
+import { DynamoDBDocumentClient, GetCommand, PutCommand, QueryCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
 import { mockClient } from 'aws-sdk-client-mock';
+import { encodeCursor, InvalidCursorError } from './cursor';
 import { VerificationRepository } from './verificationRepository';
 
 const dynamo = mockClient(DynamoDBDocumentClient);
@@ -106,5 +107,42 @@ describe('VerificationRepository.updateIfPending', () => {
     await expect(repository.updateIfPending('v1', { status: 'APPROVED', checks: [] })).rejects.toThrow(
       'ProvisionedThroughputExceededException',
     );
+  });
+});
+
+describe('VerificationRepository.listByCreatedAt', () => {
+  it('consulta o GSI em ordem decrescente, sem Scan', async () => {
+    dynamo.on(QueryCommand).resolves({ Items: [{ verificationId: 'v2' }, { verificationId: 'v1' }] });
+
+    const page = await repository.listByCreatedAt({ limit: 20 });
+
+    expect(page).toEqual({ items: [{ verificationId: 'v2' }, { verificationId: 'v1' }], nextCursor: null });
+    expect(dynamo.commandCalls(QueryCommand)[0].args[0].input).toEqual({
+      TableName: 'Verifications',
+      IndexName: 'byCreatedAt',
+      KeyConditionExpression: 'entityType = :entityType',
+      ExpressionAttributeValues: { ':entityType': 'VERIFICATION' },
+      ScanIndexForward: false,
+      Limit: 20,
+      ExclusiveStartKey: undefined,
+    });
+  });
+
+  it('devolve um cursor quando há mais páginas e o usa na página seguinte', async () => {
+    const lastKey = { verificationId: 'v1', entityType: 'VERIFICATION', createdAt: '2026-11-07T11:00:00.000Z' };
+    dynamo.on(QueryCommand).resolvesOnce({ Items: [{ verificationId: 'v2' }], LastEvaluatedKey: lastKey }).resolves({ Items: [] });
+
+    const first = await repository.listByCreatedAt({ limit: 1 });
+    expect(first.nextCursor).toBe(encodeCursor(lastKey));
+
+    await repository.listByCreatedAt({ limit: 1, cursor: first.nextCursor });
+    expect(dynamo.commandCalls(QueryCommand)[1].args[0].input.ExclusiveStartKey).toEqual(lastKey);
+  });
+
+  it('recusa um cursor inválido sem consultar o DynamoDB', async () => {
+    await expect(repository.listByCreatedAt({ limit: 20, cursor: 'nao-e-um-cursor' })).rejects.toBeInstanceOf(
+      InvalidCursorError,
+    );
+    expect(dynamo.commandCalls(QueryCommand)).toHaveLength(0);
   });
 });
