@@ -29,7 +29,7 @@
 - [x] 3.4 Implementar checagens de tamanho e de tipo real (assinatura dos bytes), com testes
 - [x] 3.5 Implementar checagem de resolução (cabeçalhos PNG e JPEG), com testes
 - [x] 3.6 Implementar checagem de sinal de edição (`exifr`), com testes
-- [ ] 3.7 Implementar checagem de duplicidade com `HashRepository` e escrita condicional, com testes (primeiro envio, repetido, reprocessamento)
+- [x] 3.7 Implementar checagem de duplicidade com `HashRepository` e escrita condicional, com testes (primeiro envio, repetido, reprocessamento)
 
 ## 4. Infraestrutura (SAM)
 
@@ -41,19 +41,19 @@
 
 ## 5. Lambda create-verification
 
-- [ ] 5.1 Implementar `VerificationRepository.create`
+- [x] 5.1 Implementar `VerificationRepository.create`
 - [ ] 5.2 Implementar handler com validação de entrada, criação do item e presigned URL
 - [ ] 5.3 Testes do handler: sucesso, tipo não permitido e corpo inválido
 
 ## 6. Lambda process-document
 
-- [ ] 6.1 Implementar `VerificationRepository.updateIfPending` com escrita condicional
+- [x] 6.1 Implementar `VerificationRepository.updateIfPending` com escrita condicional
 - [ ] 6.2 Implementar handler: extrair `verificationId` da chave, executar o pipeline (baixando o arquivo só depois da checagem de tamanho) e gravar status, motivo e `checks`
 - [ ] 6.3 Testes: aprovado, reprovado, revisão manual, erro inesperado em uma checagem, verificação inexistente e evento duplicado
 
 ## 7. Lambda list-verifications
 
-- [ ] 7.1 Implementar `VerificationRepository.listByCreatedAt` com cursor base64url
+- [x] 7.1 Implementar `VerificationRepository.listByCreatedAt` com cursor base64url
 - [ ] 7.2 Implementar handler com validação de `limit` e `cursor` e mapeamento sem `fileKey`
 - [ ] 7.3 Testes: listagem, paginação, lista vazia e parâmetros inválidos
 
