@@ -1,0 +1,280 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  mini-KYC: verificação simplificada de documentos.
+  Upload direto para o S3, processamento disparado por evento e listagem por GSI.
+
+Parameters:
+  FrontendOrigin:
+    Type: String
+    Default: http://localhost:5173
+    Description: Origem do frontend autorizada no CORS do bucket e das Function URLs.
+  AlarmEmail:
+    Type: String
+    Default: ''
+    Description: E-mail que recebe o alarme de erros (opcional; precisa confirmar a inscrição).
+
+Conditions:
+  HasAlarmEmail: !Not [!Equals [!Ref AlarmEmail, '']]
+
+Globals:
+  Function:
+    Runtime: nodejs22.x
+    Architectures: [arm64]
+    MemorySize: 256
+    Timeout: 10
+    LoggingConfig:
+      LogFormat: JSON
+    Environment:
+      Variables:
+        # Nome montado como texto (e não !Ref) para evitar dependência circular:
+        # o bucket referencia a função na notificação do evento, e a função referenciaria o bucket.
+        DOCUMENTS_BUCKET: !Sub ${AWS::StackName}-documents-${AWS::AccountId}
+        VERIFICATIONS_TABLE: !Ref VerificationsTable
+        DOCUMENT_HASHES_TABLE: !Ref DocumentHashesTable
+        # Erros no CloudWatch apontam a linha do .ts, não do .js empacotado.
+        NODE_OPTIONS: --enable-source-maps
+
+Resources:
+  # ---------------------------------------------------------------- Armazenamento
+
+  DocumentsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub ${AWS::StackName}-documents-${AWS::AccountId}
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      CorsConfiguration:
+        CorsRules:
+          # Só o PUT da presigned URL, só a partir do frontend.
+          - AllowedMethods: [PUT]
+            AllowedOrigins: [!Ref FrontendOrigin]
+            AllowedHeaders: [content-type]
+            MaxAge: 3000
+      LifecycleConfiguration:
+        Rules:
+          - Id: apagar-documentos-apos-7-dias
+            Status: Enabled
+            ExpirationInDays: 7
+            AbortIncompleteMultipartUpload:
+              DaysAfterInitiation: 1
+
+  DocumentsBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref DocumentsBucket
+      PolicyDocument:
+        Statement:
+          # Recusa qualquer acesso sem HTTPS.
+          - Effect: Deny
+            Principal: '*'
+            Action: 's3:*'
+            Resource:
+              - !GetAtt DocumentsBucket.Arn
+              - !Sub ${DocumentsBucket.Arn}/*
+            Condition:
+              Bool:
+                aws:SecureTransport: false
+
+  VerificationsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: verificationId
+          AttributeType: S
+        - AttributeName: entityType
+          AttributeType: S
+        - AttributeName: createdAt
+          AttributeType: S
+      KeySchema:
+        - AttributeName: verificationId
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: byCreatedAt
+          KeySchema:
+            - AttributeName: entityType
+              KeyType: HASH
+            - AttributeName: createdAt
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+      TimeToLiveSpecification:
+        AttributeName: expiresAt
+        Enabled: true
+
+  DocumentHashesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: hash
+          AttributeType: S
+      KeySchema:
+        - AttributeName: hash
+          KeyType: HASH
+      TimeToLiveSpecification:
+        AttributeName: expiresAt
+        Enabled: true
+
+  # ---------------------------------------------------------------- Funções
+
+  CreateVerificationFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Description: Cria a verificação PENDING e devolve a presigned URL de upload.
+      CodeUri: ./
+      Handler: handler.handler
+      FunctionUrlConfig:
+        AuthType: NONE
+        Cors:
+          AllowOrigins: [!Ref FrontendOrigin]
+          AllowMethods: [POST]
+          AllowHeaders: [content-type]
+          MaxAge: 300
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action: dynamodb:PutItem
+              Resource: !GetAtt VerificationsTable.Arn
+            # Necessária para assinar a presigned URL: quem assina precisa poder fazer o PUT.
+            - Effect: Allow
+              Action: s3:PutObject
+              Resource: !Sub arn:aws:s3:::${AWS::StackName}-documents-${AWS::AccountId}/uploads/*
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        EntryPoints: [src/functions/create-verification/handler.ts]
+        Target: es2022
+        Minify: true
+        Sourcemap: true
+
+  ProcessDocumentFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Description: Roda o pipeline de checagens quando um documento chega no S3.
+      CodeUri: ./
+      Handler: handler.handler
+      MemorySize: 512
+      Timeout: 30
+      Events:
+        DocumentUploaded:
+          Type: S3
+          Properties:
+            Bucket: !Ref DocumentsBucket
+            Events: s3:ObjectCreated:*
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: prefix
+                    Value: uploads/
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action: s3:GetObject
+              Resource: !Sub arn:aws:s3:::${AWS::StackName}-documents-${AWS::AccountId}/uploads/*
+            - Effect: Allow
+              Action: [dynamodb:GetItem, dynamodb:UpdateItem]
+              Resource: !GetAtt VerificationsTable.Arn
+            - Effect: Allow
+              Action: [dynamodb:GetItem, dynamodb:PutItem]
+              Resource: !GetAtt DocumentHashesTable.Arn
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        EntryPoints: [src/functions/process-document/handler.ts]
+        Target: es2022
+        Minify: true
+        Sourcemap: true
+
+  ListVerificationsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Description: Lista as verificações da mais recente para a mais antiga, com cursor.
+      CodeUri: ./
+      Handler: handler.handler
+      FunctionUrlConfig:
+        AuthType: NONE
+        Cors:
+          AllowOrigins: [!Ref FrontendOrigin]
+          AllowMethods: [GET]
+          MaxAge: 300
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action: dynamodb:Query
+              Resource: !Sub ${VerificationsTable.Arn}/index/byCreatedAt
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        EntryPoints: [src/functions/list-verifications/handler.ts]
+        Target: es2022
+        Minify: true
+        Sourcemap: true
+
+  # ---------------------------------------------------------------- Logs e alarme
+
+  CreateVerificationLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${CreateVerificationFunction}
+      RetentionInDays: 7
+
+  ProcessDocumentLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${ProcessDocumentFunction}
+      RetentionInDays: 7
+
+  ListVerificationsLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${ListVerificationsFunction}
+      RetentionInDays: 7
+
+  AlarmTopic:
+    Type: AWS::SNS::Topic
+    Condition: HasAlarmEmail
+    Properties:
+      Subscription:
+        - Protocol: email
+          Endpoint: !Ref AlarmEmail
+
+  ProcessDocumentErrorsAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: A função de processamento teve erros não tratados nos últimos 5 minutos.
+      Namespace: AWS/Lambda
+      MetricName: Errors
+      Dimensions:
+        - Name: FunctionName
+          Value: !Ref ProcessDocumentFunction
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: !If [HasAlarmEmail, [!Ref AlarmTopic], !Ref AWS::NoValue]
+
+Outputs:
+  CreateVerificationUrl:
+    Description: VITE_CREATE_VERIFICATION_URL do frontend
+    Value: !GetAtt CreateVerificationFunctionUrl.FunctionUrl
+  ListVerificationsUrl:
+    Description: VITE_LIST_VERIFICATIONS_URL do frontend
+    Value: !GetAtt ListVerificationsFunctionUrl.FunctionUrl
+  DocumentsBucketName:
+    Value: !Ref DocumentsBucket
+  ProcessDocumentFunctionName:
+    Value: !Ref ProcessDocumentFunction
