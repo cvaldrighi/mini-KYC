@@ -31,6 +31,7 @@
   --ring: #2c6e6a;
 
   --dropzone: #f7f9f6;
+  --shimmer: rgb(255 255 255 / 0.55);
 
   --status-pending: #3e4a57;
   --status-pending-bg: #e6eaee;
@@ -67,6 +68,7 @@
   --ring: #6fb8b1;
 
   --dropzone: #1c2834;
+  --shimmer: rgb(255 255 255 / 0.07);
 
   --status-pending: #c3ccd5;
   --status-pending-bg: #26323f;
@@ -80,6 +82,20 @@
   --status-review: #ebbe68;
   --status-review-bg: #3a2f1a;
   --status-review-border: #5e4a23;
+}
+
+/* Faixa de brilho que atravessa o Skeleton da esquerda para a direita. */
+@theme {
+  --animate-shimmer: shimmer 1.6s ease-in-out infinite;
+
+  @keyframes shimmer {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(100%);
+    }
+  }
 }
 
 @theme inline {
@@ -109,6 +125,7 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
   --color-dropzone: var(--dropzone);
+  --color-shimmer: var(--shimmer);
 
   --color-status-pending: var(--status-pending);
   --color-status-pending-bg: var(--status-pending-bg);
