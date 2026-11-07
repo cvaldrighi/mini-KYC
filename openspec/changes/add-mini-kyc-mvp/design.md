@@ -91,7 +91,8 @@ interface VerificationCheck {
 ```
 - `CheckContext` traz `verificationId`, `contentType` declarado, `size` do evento e o arquivo em `Buffer` (carregado sob demanda, depois da checagem de tamanho).
 - O pipeline percorre a lista em ordem e para no primeiro resultado diferente de `PASS`. A ordem vai das checagens mais baratas às mais caras: tamanho (sem baixar), tipo, resolução, duplicidade (escrita no banco) e edição.
-- Bibliotecas, todas em JavaScript puro, sem binários nativos: `file-type` (assinatura do arquivo), `image-size` (dimensões) e `exifr` (metadados EXIF). Hash com `node:crypto`.
+- Tipo real e dimensões lidos à mão a partir dos bytes do arquivo (assinatura do formato; cabeçalho IHDR do PNG; marcadores SOF do JPEG). Só três formatos importam, e as bibliotecas `file-type` e `image-size` foram descartadas: as versões atuais do `file-type` são só ESM e não rodam no Jest em CommonJS sem configuração extra.
+- `exifr` para os metadados EXIF (ler EXIF à mão seria bem mais trabalhoso; tem build CommonJS). Hash com `node:crypto`.
 - Arquivo de até 5 MB carregado em memória com `GetObject`. Lambda de processamento com 512 MB e timeout de 30 s.
 - Evolução: a verificação por IA será mais uma `VerificationCheck` no fim da lista, e a revisão manual um novo endpoint que tira verificações de `MANUAL_REVIEW`.
 
