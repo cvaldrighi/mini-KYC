@@ -1,19 +1,27 @@
 import { CircleAlert, Lock } from 'lucide-react';
-import { useState } from 'react';
+import { useImperativeHandle, useRef, useState, type Ref } from 'react';
 import { toast } from 'sonner';
 import type { VerificationsApi } from '@/api/types';
 import { useUpload } from '@/hooks/useUpload';
-import { Dropzone } from './Dropzone';
+import { Dropzone, type DropzoneHandle } from './Dropzone';
 import { Progress } from './ui/progress';
 
+export interface UploadPanelHandle {
+  /** Usado pelo "Enviar outra foto" do detalhe. */
+  openFilePicker: () => void;
+}
+
 interface UploadPanelProps {
+  ref?: Ref<UploadPanelHandle>;
   api: VerificationsApi;
   /** Chamado depois que o arquivo foi enviado, para atualizar a lista. */
   onUploaded: () => void;
 }
 
-export function UploadPanel({ api, onUploaded }: UploadPanelProps) {
+export function UploadPanel({ ref, api, onUploaded }: UploadPanelProps) {
   const [file, setFile] = useState<File | null>(null);
+  const dropzoneRef = useRef<DropzoneHandle>(null);
+  useImperativeHandle(ref, () => ({ openFilePicker: () => dropzoneRef.current?.openFilePicker() }), []);
   const { state, upload, reset } = useUpload(api, {
     onUploaded: () => {
       toast.success('Documento enviado');
@@ -35,7 +43,7 @@ export function UploadPanel({ api, onUploaded }: UploadPanelProps) {
 
   return (
     <div className="flex flex-col gap-4">
-      <Dropzone file={file} onFileSelect={selectFile} onClear={clearFile} disabled={isUploading} />
+      <Dropzone ref={dropzoneRef} file={file} onFileSelect={selectFile} onClear={clearFile} disabled={isUploading} />
 
       {state.phase === 'uploading' && (
         <div className="flex flex-col gap-1.5">

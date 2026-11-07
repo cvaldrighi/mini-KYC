@@ -1,8 +1,11 @@
+import { useRef, useState } from 'react';
 import { Toaster } from 'sonner';
 import { api } from '@/api';
 import { AppHeader } from '@/components/AppHeader';
 import { StatusAnnouncer } from '@/components/StatusAnnouncer';
-import { UploadPanel } from '@/components/UploadPanel';
+import { UploadPanel, type UploadPanelHandle } from '@/components/UploadPanel';
+import { VerificationSheet } from '@/components/VerificationSheet';
+import type { Verification } from '@/domain/verification';
 import { VerificationList } from '@/components/VerificationList';
 import { useVerifications } from '@/hooks/useVerifications';
 
@@ -12,6 +15,40 @@ import { useVerifications } from '@/hooks/useVerifications';
  */
 export default function App() {
   const { verifications, isLoading, error, refresh } = useVerifications(api);
+  const uploadPanelRef = useRef<UploadPanelHandle>(null);
+
+  // Detalhe: guardamos o id (e não o objeto) para o painel refletir as atualizações do polling.
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [isDetailOpen, setDetailOpen] = useState(false);
+  const selected = verifications.find((verification) => verification.verificationId === selectedId) ?? null;
+  const rowToFocusRef = useRef<HTMLElement | null>(null);
+  const sendAnotherRef = useRef(false);
+
+  function openDetail(verification: Verification, trigger: HTMLElement) {
+    rowToFocusRef.current = trigger;
+    setSelectedId(verification.verificationId);
+    setDetailOpen(true);
+  }
+
+  function sendAnother() {
+    sendAnotherRef.current = true;
+    setDetailOpen(false);
+  }
+
+  /**
+   * Ao fechar, o Radix tentaria devolver o foco a um "trigger" que não usamos.
+   * Decidimos nós: volta para a linha que abriu o painel ou, em "Enviar outra foto",
+   * vai para a área de envio, já abrindo o seletor de arquivo.
+   */
+  function handleDetailCloseAutoFocus(event: Event) {
+    event.preventDefault();
+    if (sendAnotherRef.current) {
+      sendAnotherRef.current = false;
+      uploadPanelRef.current?.openFilePicker();
+      return;
+    }
+    rowToFocusRef.current?.focus();
+  }
 
   return (
     <div className="min-h-dvh">
@@ -26,7 +63,7 @@ export default function App() {
               Foto ou PDF do RG ou da CNH. JPEG, PNG ou PDF, até 5 MB.
             </p>
           </div>
-          <UploadPanel api={api} onUploaded={refresh} />
+          <UploadPanel ref={uploadPanelRef} api={api} onUploaded={refresh} />
         </section>
 
         <section aria-labelledby="lista-titulo" className="flex min-w-0 flex-[999_1_560px] flex-col gap-4">
@@ -36,10 +73,23 @@ export default function App() {
             </h2>
             <p className="text-[13px] text-muted-foreground">Atualiza sozinho a cada 5 segundos</p>
           </div>
-          <VerificationList verifications={verifications} isLoading={isLoading} error={error} onRetry={refresh} />
+          <VerificationList
+            verifications={verifications}
+            isLoading={isLoading}
+            error={error}
+            onRetry={refresh}
+            onSelect={openDetail}
+          />
           <StatusAnnouncer verifications={verifications} />
         </section>
       </main>
+      <VerificationSheet
+        verification={selected}
+        open={isDetailOpen}
+        onOpenChange={setDetailOpen}
+        onSendAnother={sendAnother}
+        onCloseAutoFocus={handleDetailCloseAutoFocus}
+      />
       <Toaster
         position="top-center"
         toastOptions={{
