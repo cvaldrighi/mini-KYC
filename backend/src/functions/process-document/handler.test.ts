@@ -4,6 +4,7 @@ import type { VerificationRecord } from '../../repositories/verificationReposito
 import { s3Event } from '../../test/events';
 import { readFixture } from '../../test/fixtures';
 import { createHandler, type Dependencies } from './handler';
+import { logger } from '../../shared/logger';
 
 function pending(overrides: Partial<VerificationRecord> = {}): VerificationRecord {
   return {
@@ -35,9 +36,9 @@ function setupWithRealChecks(fixture: string, record = pending()) {
 }
 
 beforeEach(() => {
-  jest.spyOn(console, 'info').mockImplementation(() => {});
-  jest.spyOn(console, 'warn').mockImplementation(() => {});
-  jest.spyOn(console, 'error').mockImplementation(() => {});
+  jest.spyOn(logger, 'info').mockImplementation(() => {});
+  jest.spyOn(logger, 'warn').mockImplementation(() => {});
+  jest.spyOn(logger, 'error').mockImplementation(() => {});
 });
 
 afterEach(() => {
@@ -100,7 +101,7 @@ describe('process-document', () => {
     await handler(s3Event('uploads/nao-existe.jpg', 200_000));
 
     expect(deps.repository.updateIfPending).not.toHaveBeenCalled();
-    expect(console.warn).toHaveBeenCalledWith('Verificação não encontrada para o arquivo enviado', expect.any(Object));
+    expect(logger.warn).toHaveBeenCalledWith('Verificação não encontrada para o arquivo enviado', expect.any(Object));
   });
 
   it('não roda o pipeline de novo para uma verificação já concluída', async () => {
@@ -117,7 +118,7 @@ describe('process-document', () => {
     deps.repository.updateIfPending.mockResolvedValue('ALREADY_PROCESSED');
 
     await expect(handler(s3Event('uploads/v1.jpg', file.length))).resolves.toBeUndefined();
-    expect(console.info).toHaveBeenCalledWith('Outro processamento gravou o resultado antes; nada alterado', { verificationId: 'v1' });
+    expect(logger.info).toHaveBeenCalledWith('Outro processamento gravou o resultado antes; nada alterado', { verificationId: 'v1' });
   });
 
   it('ignora objetos fora do padrão uploads/<id>.<extensão>', async () => {
@@ -139,7 +140,7 @@ describe('process-document', () => {
     await createHandler(deps)(s3Event('uploads/v1.jpg', 200_000));
 
     expect(deps.repository.updateIfPending).toHaveBeenCalledWith('v1', { status: 'MANUAL_REVIEW', reason: 'PROCESSING_ERROR', checks: [] });
-    expect(console.error).toHaveBeenCalledWith(
+    expect(logger.error).toHaveBeenCalledWith(
       'Erro inesperado numa checagem; verificação enviada para revisão manual',
       expect.objectContaining({ verificationId: 'v1', check: 'resolution' }),
     );

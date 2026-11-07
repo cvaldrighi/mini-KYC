@@ -1,11 +1,12 @@
 import { randomUUID } from 'node:crypto';
 import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import type { LambdaFunctionURLEvent } from 'aws-lambda';
+import type { Context, LambdaFunctionURLEvent } from 'aws-lambda';
 import { isAcceptedContentType, type AcceptedContentType } from '../../domain/verification';
 import { VerificationRepository } from '../../repositories/verificationRepository';
 import { documentClient } from '../../shared/dynamo';
 import { requireEnv } from '../../shared/env';
+import { logger } from '../../shared/logger';
 import { readBody } from '../../shared/functionUrlEvent';
 import { badRequest, internalError, json, methodNotAllowed, type HttpResponse } from '../../shared/http';
 import { s3Client } from '../../shared/s3';
@@ -72,9 +73,10 @@ export function createHandler({ repository, presignUpload, generateId }: Depende
         contentType: request.contentType,
         fileKey,
       });
+      logger.info('Verificação criada', { verificationId, contentType: request.contentType });
       return json(201, { verificationId, uploadUrl, expiresIn: UPLOAD_URL_EXPIRES_IN_SECONDS });
     } catch (error) {
-      console.error('Falha ao criar a verificação', { verificationId, error });
+      logger.error('Falha ao criar a verificação', { verificationId, error });
       return internalError();
     }
   };
@@ -95,7 +97,8 @@ function defaultDependencies(): Dependencies {
 let handlerWithDefaults: ReturnType<typeof createHandler> | undefined;
 
 /** Ponto de entrada da Lambda. Monta as dependências reais na primeira invocação. */
-export const handler = (event: LambdaFunctionURLEvent) => {
+export const handler = (event: LambdaFunctionURLEvent, context: Context) => {
+  logger.addContext(context);
   handlerWithDefaults ??= createHandler(defaultDependencies());
   return handlerWithDefaults(event);
 };

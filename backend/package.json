@@ -12,6 +12,7 @@
     "validate": "sam validate --lint"
   },
   "dependencies": {
+    "@aws-lambda-powertools/logger": "^2.20.0",
     "@aws-sdk/client-dynamodb": "^3.800.0",
     "@aws-sdk/client-s3": "^3.800.0",
     "@aws-sdk/lib-dynamodb": "^3.800.0",

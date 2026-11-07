@@ -1,4 +1,4 @@
-import type { S3Event, S3EventRecord } from 'aws-lambda';
+import type { Context, S3Event, S3EventRecord } from 'aws-lambda';
 import { createChecks } from '../../checks';
 import { lazyFile, runPipeline } from '../../checks/pipeline';
 import type { VerificationCheck } from '../../checks/types';
@@ -7,6 +7,7 @@ import { VerificationRepository } from '../../repositories/verificationRepositor
 import { downloadObject } from '../../shared/downloadObject';
 import { documentClient } from '../../shared/dynamo';
 import { requireEnv } from '../../shared/env';
+import { logger } from '../../shared/logger';
 import { s3Client } from '../../shared/s3';
 
 /** Chaves criadas pela create-verification: uploads/<verificationId>.<extensão>. */
@@ -28,18 +29,18 @@ async function processRecord(record: S3EventRecord, { repository, checks, downlo
   const key = decodeKey(record.s3.object.key);
   const verificationId = UPLOAD_KEY.exec(key)?.[1];
   if (!verificationId) {
-    console.warn('Objeto fora do padrão de upload; ignorado', { key });
+    logger.warn('Objeto fora do padrão de upload; ignorado', { key });
     return;
   }
 
   const verification = await repository.get(verificationId);
   if (!verification) {
-    console.warn('Verificação não encontrada para o arquivo enviado', { verificationId, key });
+    logger.warn('Verificação não encontrada para o arquivo enviado', { verificationId, key });
     return;
   }
   if (verification.status !== 'PENDING') {
     // Evento repetido para uma verificação já concluída: nem roda o pipeline de novo.
-    console.info('Verificação já processada; evento ignorado', { verificationId, status: verification.status });
+    logger.info('Verificação já processada; evento ignorado', { verificationId, status: verification.status });
     return;
   }
 
@@ -51,7 +52,7 @@ async function processRecord(record: S3EventRecord, { repository, checks, downlo
   });
 
   if (result.failure) {
-    console.error('Erro inesperado numa checagem; verificação enviada para revisão manual', {
+    logger.error('Erro inesperado numa checagem; verificação enviada para revisão manual', {
       verificationId,
       check: result.failure.check,
       error: result.failure.error,
@@ -65,11 +66,11 @@ async function processRecord(record: S3EventRecord, { repository, checks, downlo
   });
   if (update === 'ALREADY_PROCESSED') {
     // Dois eventos iguais processados ao mesmo tempo: o outro gravou primeiro. Resultado preservado.
-    console.info('Outro processamento gravou o resultado antes; nada alterado', { verificationId });
+    logger.info('Outro processamento gravou o resultado antes; nada alterado', { verificationId });
     return;
   }
 
-  console.info('Verificação concluída', {
+  logger.info('Verificação concluída', {
     verificationId,
     status: result.status,
     reason: result.reason,
@@ -105,7 +106,8 @@ function defaultDependencies(): Dependencies {
 let handlerWithDefaults: ReturnType<typeof createHandler> | undefined;
 
 /** Ponto de entrada da Lambda. Monta as dependências reais na primeira invocação. */
-export const handler = (event: S3Event) => {
+export const handler = (event: S3Event, context: Context) => {
+  logger.addContext(context);
   handlerWithDefaults ??= createHandler(defaultDependencies());
   return handlerWithDefaults(event);
 };

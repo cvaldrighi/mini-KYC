@@ -1,8 +1,9 @@
-import type { LambdaFunctionURLEvent } from 'aws-lambda';
+import type { Context, LambdaFunctionURLEvent } from 'aws-lambda';
 import { InvalidCursorError } from '../../repositories/cursor';
 import { VerificationRepository, type VerificationRecord } from '../../repositories/verificationRepository';
 import { documentClient } from '../../shared/dynamo';
 import { requireEnv } from '../../shared/env';
+import { logger } from '../../shared/logger';
 import { badRequest, internalError, json, methodNotAllowed, type HttpResponse } from '../../shared/http';
 
 const DEFAULT_LIMIT = 20;
@@ -39,7 +40,7 @@ export function createHandler({ repository }: Dependencies) {
       return json(200, { items: page.items.map(toApiItem), nextCursor: page.nextCursor });
     } catch (error) {
       if (error instanceof InvalidCursorError) return badRequest('INVALID_REQUEST');
-      console.error('Falha ao listar as verificações', { error });
+      logger.error('Falha ao listar as verificações', { error });
       return internalError();
     }
   };
@@ -48,7 +49,8 @@ export function createHandler({ repository }: Dependencies) {
 let handlerWithDefaults: ReturnType<typeof createHandler> | undefined;
 
 /** Ponto de entrada da Lambda. Monta as dependências reais na primeira invocação. */
-export const handler = (event: LambdaFunctionURLEvent) => {
+export const handler = (event: LambdaFunctionURLEvent, context: Context) => {
+  logger.addContext(context);
   handlerWithDefaults ??= createHandler({
     repository: new VerificationRepository(documentClient, requireEnv('VERIFICATIONS_TABLE')),
   });
