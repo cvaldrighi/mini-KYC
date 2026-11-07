@@ -41,13 +41,13 @@
 
 ## 5. Lambda create-verification
 
-- [ ] 5.1 Implementar `VerificationRepository.create`
+- [x] 5.1 Implementar `VerificationRepository.create`
 - [ ] 5.2 Implementar handler com validação de entrada, criação do item e presigned URL
 - [ ] 5.3 Testes do handler: sucesso, tipo não permitido e corpo inválido
 
 ## 6. Lambda process-document
 
-- [ ] 6.1 Implementar `VerificationRepository.updateIfPending` com escrita condicional
+- [x] 6.1 Implementar `VerificationRepository.updateIfPending` com escrita condicional
 - [ ] 6.2 Implementar handler: extrair `verificationId` da chave, executar o pipeline (baixando o arquivo só depois da checagem de tamanho) e gravar status, motivo e `checks`
 - [ ] 6.3 Testes: aprovado, reprovado, revisão manual, erro inesperado em uma checagem, verificação inexistente e evento duplicado
 
