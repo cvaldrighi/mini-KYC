@@ -1,0 +1,20 @@
+# Configuração do `sam build` e do `sam deploy`. Não guarda credenciais:
+# a conta vem do perfil da AWS CLI (variável AWS_PROFILE).
+version = 0.1
+
+[default.global.parameters]
+stack_name = "mini-kyc"
+region = "sa-east-1"
+
+[default.build.parameters]
+cached = true
+parallel = true
+
+[default.validate.parameters]
+lint = true
+
+[default.deploy.parameters]
+capabilities = "CAPABILITY_IAM"
+confirm_changeset = true
+resolve_s3 = true
+parameter_overrides = "FrontendOrigin=\"http://localhost:5173\""

@@ -33,34 +33,34 @@
 
 ## 4. Infraestrutura (SAM)
 
-- [ ] 4.1 Criar alerta de US$ 5 no AWS Budgets
-- [ ] 4.2 Escrever `template.yaml` com bucket privado (CORS, criptografia, lifecycle de 7 dias), tabela `Verifications` com GSI e TTL, e tabela `DocumentHashes` com TTL
-- [ ] 4.3 Declarar as três Lambdas (Node.js 22, esbuild), Function URLs com CORS, evento S3 no prefixo `uploads/`, permissões IAM mínimas e log groups com retenção de 7 dias
-- [ ] 4.4 Declarar alarme de erros na função de processamento
-- [ ] 4.5 Primeiro deploy com `sam deploy --guided` e validar recursos no console
+- [x] 4.1 Criar alerta de US$ 5 no AWS Budgets
+- [x] 4.2 Escrever `template.yaml` com bucket privado (CORS, criptografia, lifecycle de 7 dias), tabela `Verifications` com GSI e TTL, e tabela `DocumentHashes` com TTL
+- [x] 4.3 Declarar as três Lambdas (Node.js 22, esbuild), Function URLs com CORS, evento S3 no prefixo `uploads/`, permissões IAM mínimas e log groups com retenção de 7 dias
+- [x] 4.4 Declarar alarme de erros na função de processamento
+- [x] 4.5 Primeiro deploy com `sam deploy --guided` e validar recursos no console
 
 ## 5. Lambda create-verification
 
 - [x] 5.1 Implementar `VerificationRepository.create`
-- [ ] 5.2 Implementar handler com validação de entrada, criação do item e presigned URL
-- [ ] 5.3 Testes do handler: sucesso, tipo não permitido e corpo inválido
+- [x] 5.2 Implementar handler com validação de entrada, criação do item e presigned URL
+- [x] 5.3 Testes do handler: sucesso, tipo não permitido e corpo inválido
 
 ## 6. Lambda process-document
 
 - [x] 6.1 Implementar `VerificationRepository.updateIfPending` com escrita condicional
-- [ ] 6.2 Implementar handler: extrair `verificationId` da chave, executar o pipeline (baixando o arquivo só depois da checagem de tamanho) e gravar status, motivo e `checks`
-- [ ] 6.3 Testes: aprovado, reprovado, revisão manual, erro inesperado em uma checagem, verificação inexistente e evento duplicado
+- [x] 6.2 Implementar handler: extrair `verificationId` da chave, executar o pipeline (baixando o arquivo só depois da checagem de tamanho) e gravar status, motivo e `checks`
+- [x] 6.3 Testes: aprovado, reprovado, revisão manual, erro inesperado em uma checagem, verificação inexistente e evento duplicado
 
 ## 7. Lambda list-verifications
 
 - [x] 7.1 Implementar `VerificationRepository.listByCreatedAt` com cursor base64url
-- [ ] 7.2 Implementar handler com validação de `limit` e `cursor` e mapeamento sem `fileKey`
-- [ ] 7.3 Testes: listagem, paginação, lista vazia e parâmetros inválidos
+- [x] 7.2 Implementar handler com validação de `limit` e `cursor` e mapeamento sem `fileKey`
+- [x] 7.3 Testes: listagem, paginação, lista vazia e parâmetros inválidos
 
 ## 8. Integração ponta a ponta
 
 - [x] 8.1 Implementar `awsApi` no frontend usando as Function URLs (via `.env`)
-- [ ] 8.2 Deploy e teste manual com os arquivos de `fixtures/` (incluindo enviar o mesmo arquivo duas vezes), conferindo cada status e motivo
+- [x] 8.2 Deploy e teste manual com os arquivos de `fixtures/` (incluindo enviar o mesmo arquivo duas vezes), conferindo cada status e motivo
 
 ## 9. Observabilidade (CloudWatch)
 

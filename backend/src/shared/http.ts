@@ -1,6 +1,6 @@
 import type { APIGatewayProxyStructuredResultV2 } from 'aws-lambda';
 
-export type ErrorCode = 'INVALID_REQUEST' | 'UNSUPPORTED_CONTENT_TYPE';
+export type ErrorCode = 'INVALID_REQUEST' | 'UNSUPPORTED_CONTENT_TYPE' | 'METHOD_NOT_ALLOWED' | 'INTERNAL_ERROR';
 
 /**
  * Resposta HTTP de uma Lambda Function URL.
@@ -19,4 +19,12 @@ export function json(statusCode: number, body: unknown): HttpResponse {
 
 export function badRequest(error: ErrorCode): HttpResponse {
   return json(400, { error });
+}
+
+export function methodNotAllowed(): HttpResponse {
+  return json(405, { error: 'METHOD_NOT_ALLOWED' });
+}
+
+export function internalError(): HttpResponse {
+  return json(500, { error: 'INTERNAL_ERROR' });
 }
