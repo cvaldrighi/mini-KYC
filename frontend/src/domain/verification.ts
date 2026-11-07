@@ -62,3 +62,7 @@ export type AcceptedContentType = (typeof ACCEPTED_CONTENT_TYPES)[number];
 
 export const MIN_FILE_SIZE_BYTES = 10 * 1024;
 export const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024;
+
+/** Resolução mínima de imagens: lado maior e lado menor, em pixels. */
+export const MIN_IMAGE_LONG_SIDE_PX = 600;
+export const MIN_IMAGE_SHORT_SIDE_PX = 400;
