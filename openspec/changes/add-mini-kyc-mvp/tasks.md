@@ -42,8 +42,8 @@
 ## 5. Lambda create-verification
 
 - [x] 5.1 Implementar `VerificationRepository.create`
-- [ ] 5.2 Implementar handler com validação de entrada, criação do item e presigned URL
-- [ ] 5.3 Testes do handler: sucesso, tipo não permitido e corpo inválido
+- [x] 5.2 Implementar handler com validação de entrada, criação do item e presigned URL
+- [x] 5.3 Testes do handler: sucesso, tipo não permitido e corpo inválido
 
 ## 6. Lambda process-document
 
