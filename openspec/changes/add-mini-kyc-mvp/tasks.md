@@ -12,12 +12,12 @@
 - [x] 2.3 Criar o layout base (cabeçalho, duas colunas responsivas) e o `ThemeToggle`
 - [x] 2.4 Implementar `StatusBadge` com texto, ícone e cor por status e o anúncio de mudança de status numa região `aria-live`, com testes
 - [x] 2.5 Implementar hook `useVerifications` com carregamento, erro, polling de 5 s e limpeza do intervalo, com teste do unmount
-- [ ] 2.6 Implementar `VerificationList` e `VerificationRow` com esqueleto, erro, vazio e data relativa, com teste
-- [ ] 2.7 Implementar `Dropzone` com arrastar e soltar, botões "Tirar foto" e "Escolher arquivo" no celular, validação, prévia e liberação da URL da prévia, com teste de arquivo inválido
-- [ ] 2.8 Implementar hook `useUpload` com progresso via `XMLHttpRequest` e `UploadPanel` com barra de progresso, notificação e "Tentar de novo", com teste de falha
+- [x] 2.6 Implementar `VerificationList` e `VerificationRow` com esqueleto, erro, vazio e data relativa, com teste
+- [x] 2.7 Implementar `Dropzone` com arrastar e soltar, botões "Tirar foto" e "Escolher arquivo" no celular, validação, prévia e liberação da URL da prévia, com teste de arquivo inválido
+- [x] 2.8 Implementar hook `useUpload` com progresso via `XMLHttpRequest` e `UploadPanel` com barra de progresso, notificação e "Tentar de novo", com teste de falha
 - [ ] 2.9 Implementar `reasonMessages` (título e explicação por motivo, usando `details`), com testes
 - [ ] 2.10 Implementar `VerificationSheet` com `ChecksTimeline`, explicação e botão "Enviar outra foto" para reprovadas, com testes de abrir, fechar com Esc, foco e o botão
-- [ ] 2.11 Desenhar o padrão de guilhoché em SVG para a área de envio
+- [x] 2.11 Desenhar o padrão de guilhoché em SVG para a área de envio
 - [ ] 2.12 Revisar responsividade (360 px), navegação por teclado e contraste nos dois temas
 - [ ] 2.13 Montar `App` e escolher a implementação da API por `VITE_API_MODE`
 
