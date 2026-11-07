@@ -8,6 +8,7 @@ import {
   type Verification,
   type VerificationStatus,
 } from '@/domain/verification';
+import { createAbortError } from '@/lib/abortError';
 import { ApiError } from './errors';
 import type { VerificationsApi } from './types';
 
@@ -129,15 +130,11 @@ export function decideOutcome(
   return { status: 'APPROVED', checks };
 }
 
-function abortError(): DOMException {
-  return new DOMException('Envio cancelado', 'AbortError');
-}
-
 /** Espera `ms`, rejeitando se o `signal` for abortado antes. */
 function sleep(ms: number, signal?: AbortSignal): Promise<void> {
   return new Promise((resolve, reject) => {
     if (signal?.aborted) {
-      reject(abortError());
+      reject(createAbortError());
       return;
     }
     const timer = setTimeout(() => {
@@ -146,7 +143,7 @@ function sleep(ms: number, signal?: AbortSignal): Promise<void> {
     }, ms);
     function onAbort() {
       clearTimeout(timer);
-      reject(abortError());
+      reject(createAbortError());
     }
     signal?.addEventListener('abort', onAbort, { once: true });
   });

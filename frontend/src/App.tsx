@@ -1,6 +1,8 @@
+import { Toaster } from 'sonner';
 import { api } from '@/api';
 import { AppHeader } from '@/components/AppHeader';
 import { StatusAnnouncer } from '@/components/StatusAnnouncer';
+import { UploadPanel } from '@/components/UploadPanel';
 import { VerificationList } from '@/components/VerificationList';
 import { useVerifications } from '@/hooks/useVerifications';
 
@@ -24,7 +26,7 @@ export default function App() {
               Foto ou PDF do RG ou da CNH. JPEG, PNG ou PDF, até 5 MB.
             </p>
           </div>
-          {/* UploadPanel: tarefa 2.8 */}
+          <UploadPanel api={api} onUploaded={refresh} />
         </section>
 
         <section aria-labelledby="lista-titulo" className="flex min-w-0 flex-[999_1_560px] flex-col gap-4">
@@ -38,6 +40,17 @@ export default function App() {
           <StatusAnnouncer verifications={verifications} />
         </section>
       </main>
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          unstyled: true,
+          classNames: {
+            toast:
+              'flex w-full items-center gap-2.5 rounded-xl border border-border bg-card px-4 py-3 text-[15px] font-medium text-card-foreground shadow-lg',
+            icon: 'text-status-approved',
+          },
+        }}
+      />
     </div>
   );
 }
