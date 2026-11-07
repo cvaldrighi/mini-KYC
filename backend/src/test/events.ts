@@ -1,4 +1,4 @@
-import type { LambdaFunctionURLEvent } from 'aws-lambda';
+import type { LambdaFunctionURLEvent, S3Event } from 'aws-lambda';
 
 /** Evento de Lambda Function URL para testes, só com o que os handlers usam. */
 export function functionUrlEvent({
@@ -32,4 +32,20 @@ export function functionUrlEvent({
       timeEpoch: 1_793_966_400_000,
     },
   } as LambdaFunctionURLEvent;
+}
+
+/** Evento do S3 (objeto criado) para testes. */
+export function s3Event(key: string, size: number, bucket = 'mini-kyc-documents-123456789012'): S3Event {
+  return {
+    Records: [
+      {
+        eventVersion: '2.1',
+        eventSource: 'aws:s3',
+        awsRegion: 'sa-east-1',
+        eventTime: '2026-11-07T12:00:00.000Z',
+        eventName: 'ObjectCreated:Put',
+        s3: { bucket: { name: bucket }, object: { key, size } },
+      },
+    ],
+  } as unknown as S3Event;
 }
