@@ -12,11 +12,14 @@
     />
     <script>
       // Aplica o tema antes da primeira pintura para evitar o "flash" de tema errado.
+      let saved = null;
       try {
-        const saved = localStorage.getItem('theme');
-        const dark = saved ? saved === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
-        document.documentElement.classList.toggle('dark', dark);
-      } catch {}
+        saved = localStorage.getItem('theme');
+      } catch {
+        saved = null; // Armazenamento bloqueado: segue o tema do sistema.
+      }
+      const dark = saved ? saved === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.classList.toggle('dark', dark);
     </script>
   </head>
   <body>
