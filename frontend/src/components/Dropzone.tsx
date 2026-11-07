@@ -4,6 +4,7 @@ import { ACCEPTED_CONTENT_TYPES } from '@/domain/verification';
 import { cn } from '@/lib/utils';
 import { validateFile } from '@/lib/validateFile';
 import { FilePreview } from './FilePreview';
+import { GuillochePattern } from './GuillochePattern';
 
 interface DropzoneProps {
   file: File | null;
@@ -84,6 +85,7 @@ export function Dropzone({ file, onFileSelect, onClear, disabled = false }: Drop
           disabled && 'opacity-60',
         )}
       >
+        <GuillochePattern className="text-primary" />
         <div className="relative flex h-full flex-col justify-between p-5 sm:p-7">
           <div className="hidden size-11 items-center justify-center rounded-xl bg-secondary text-primary sm:flex">
             <Upload aria-hidden className="size-[22px]" />
