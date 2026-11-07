@@ -60,7 +60,7 @@
 ## 8. Integração ponta a ponta
 
 - [x] 8.1 Implementar `awsApi` no frontend usando as Function URLs (via `.env`)
-- [ ] 8.2 Deploy e teste manual com os arquivos de `fixtures/` (incluindo enviar o mesmo arquivo duas vezes), conferindo cada status e motivo
+- [x] 8.2 Deploy e teste manual com os arquivos de `fixtures/` (incluindo enviar o mesmo arquivo duas vezes), conferindo cada status e motivo
 
 ## 9. Observabilidade (CloudWatch)
 
