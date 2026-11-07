@@ -1,10 +1,16 @@
+import { api } from '@/api';
 import { AppHeader } from '@/components/AppHeader';
+import { StatusAnnouncer } from '@/components/StatusAnnouncer';
+import { VerificationList } from '@/components/VerificationList';
+import { useVerifications } from '@/hooks/useVerifications';
 
 /**
  * Layout em duas colunas que se empilham quando não cabem lado a lado:
  * as duas seções usam flex-basis (400px e 560px) dentro de um container com flex-wrap.
  */
 export default function App() {
+  const { verifications, isLoading, error, refresh } = useVerifications(api);
+
   return (
     <div className="min-h-dvh">
       <AppHeader />
@@ -28,7 +34,8 @@ export default function App() {
             </h2>
             <p className="text-[13px] text-muted-foreground">Atualiza sozinho a cada 5 segundos</p>
           </div>
-          {/* VerificationList: tarefa 2.6 */}
+          <VerificationList verifications={verifications} isLoading={isLoading} error={error} onRetry={refresh} />
+          <StatusAnnouncer verifications={verifications} />
         </section>
       </main>
     </div>
