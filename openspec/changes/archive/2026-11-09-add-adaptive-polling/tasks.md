@@ -6,4 +6,4 @@
 
 ## 2. Verificação
 
-- [ ] 2.1 Conferir no DevTools (aba Network) que as buscas param sem verificações em análise e voltam depois de um envio
+- [x] 2.1 Conferir no DevTools (aba Network) que as buscas param sem verificações em análise e voltam depois de um envio
