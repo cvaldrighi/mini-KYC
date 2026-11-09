@@ -74,6 +74,6 @@
 
 ## 10. Fechamento
 
-- [ ] 10.1 Revisar critérios de aceite das specs e marcar o que foi entregue
-- [ ] 10.2 Registrar no README decisões, trade-offs e próximos passos (revisão manual, verificação por IA, API Gateway, DLQ)
+- [x] 10.1 Revisar critérios de aceite das specs e marcar o que foi entregue
+- [x] 10.2 Registrar no README decisões, trade-offs e próximos passos (revisão manual, verificação por IA, API Gateway, DLQ)
 - [ ] 10.3 Destruir a stack com `sam delete` quando não estiver usando
