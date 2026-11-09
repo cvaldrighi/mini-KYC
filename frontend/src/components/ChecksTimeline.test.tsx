@@ -49,6 +49,6 @@ describe('ChecksTimeline', () => {
 
     expect(steps()[4]).toHaveTextContent('Editado com GIMP 2.10');
     expect(steps()[4]).toHaveTextContent('Revisão');
-    expect(screen.getByText('Arquivo ainda não enviado')).toBeInTheDocument();
+    expect(screen.getByText('Nenhum envio anterior com o mesmo arquivo')).toBeInTheDocument();
   });
 });

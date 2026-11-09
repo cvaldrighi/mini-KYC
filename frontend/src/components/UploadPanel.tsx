@@ -49,7 +49,7 @@ export function UploadPanel({ ref, api, onUploaded }: UploadPanelProps) {
         <div className="flex flex-col gap-1.5">
           <div className="flex justify-between text-[13px] text-muted-foreground">
             <span>Enviando</span>
-            <span>{state.progress}%</span>
+            <span className="tabular-nums">{state.progress}%</span>
           </div>
           <Progress value={state.progress} label="Progresso do envio" />
         </div>
