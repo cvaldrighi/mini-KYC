@@ -1,15 +1,29 @@
 import { act, renderHook } from '@testing-library/react';
 import type { ListVerificationsOutput, VerificationsApi } from '@/api/types';
-import type { Verification } from '@/domain/verification';
+import type { Verification, VerificationStatus } from '@/domain/verification';
 import { POLLING_INTERVAL_MS, useVerifications } from './useVerifications';
 
-function verification(id: string): Verification {
+function verification(id: string, status: VerificationStatus = 'PENDING'): Verification {
   const date = '2026-11-06T10:00:00.000Z';
-  return { verificationId: id, fileName: `${id}.jpg`, status: 'PENDING', createdAt: date, updatedAt: date };
+  return { verificationId: id, fileName: `${id}.jpg`, status, createdAt: date, updatedAt: date };
+}
+
+function concluded(...ids: string[]): ListVerificationsOutput {
+  return { items: ids.map((id) => verification(id, 'APPROVED')), nextCursor: null };
+}
+
+let visibility: DocumentVisibilityState = 'visible';
+
+/** Simula a aba indo para segundo plano ou voltando. */
+function setVisibility(state: DocumentVisibilityState) {
+  visibility = state;
+  act(() => {
+    document.dispatchEvent(new Event('visibilitychange'));
+  });
 }
 
 function page(...ids: string[]): ListVerificationsOutput {
-  return { items: ids.map(verification), nextCursor: null };
+  return { items: ids.map((id) => verification(id)), nextCursor: null };
 }
 
 function fakeApi(listVerifications: jest.Mock): VerificationsApi {
@@ -23,7 +37,12 @@ async function advance(ms: number) {
   });
 }
 
+beforeAll(() => {
+  Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => visibility });
+});
+
 beforeEach(() => {
+  visibility = 'visible';
   jest.useFakeTimers();
 });
 
@@ -127,5 +146,78 @@ describe('useVerifications', () => {
     await act(async () => resolveOld(page('antigo')));
 
     expect(result.current.verifications.map((v) => v.verificationId)).toEqual(['novo']);
+  });
+
+  describe('polling adaptativo', () => {
+    it('para de buscar quando nenhuma verificação está em análise', async () => {
+      const list = jest.fn().mockResolvedValue(concluded('a', 'b'));
+      const api = fakeApi(list);
+      renderHook(() => useVerifications(api));
+
+      await advance(0);
+      await advance(POLLING_INTERVAL_MS * 3);
+
+      expect(list).toHaveBeenCalledTimes(1);
+    });
+
+    it('continua enquanto houver verificação em análise e para quando ela conclui', async () => {
+      const list = jest
+        .fn()
+        .mockResolvedValueOnce(page('a'))
+        .mockResolvedValueOnce(concluded('a'))
+        .mockResolvedValue(concluded('a'));
+      const api = fakeApi(list);
+      renderHook(() => useVerifications(api));
+
+      await advance(0);
+      await advance(POLLING_INTERVAL_MS);
+      expect(list).toHaveBeenCalledTimes(2);
+
+      await advance(POLLING_INTERVAL_MS * 3);
+      expect(list).toHaveBeenCalledTimes(2);
+    });
+
+    it('volta a buscar depois de um novo envio (refresh)', async () => {
+      const list = jest.fn().mockResolvedValueOnce(concluded('a')).mockResolvedValue(page('novo'));
+      const api = fakeApi(list);
+      const { result } = renderHook(() => useVerifications(api));
+      await advance(0);
+      await advance(POLLING_INTERVAL_MS * 2);
+      expect(list).toHaveBeenCalledTimes(1);
+
+      act(() => result.current.refresh());
+      await advance(0);
+      await advance(POLLING_INTERVAL_MS);
+
+      expect(list).toHaveBeenCalledTimes(3);
+    });
+
+    it('não busca com a aba oculta e busca na hora ao voltar', async () => {
+      const list = jest.fn().mockResolvedValue(page('a'));
+      const api = fakeApi(list);
+      renderHook(() => useVerifications(api));
+      await advance(0);
+
+      setVisibility('hidden');
+      await advance(POLLING_INTERVAL_MS * 3);
+      expect(list).toHaveBeenCalledTimes(1);
+
+      setVisibility('visible');
+      await advance(0);
+      expect(list).toHaveBeenCalledTimes(2);
+    });
+
+    it('ao voltar para a aba, busca mesmo se o polling tinha parado', async () => {
+      const list = jest.fn().mockResolvedValue(concluded('a'));
+      const api = fakeApi(list);
+      renderHook(() => useVerifications(api));
+      await advance(0);
+
+      setVisibility('hidden');
+      setVisibility('visible');
+      await advance(0);
+
+      expect(list).toHaveBeenCalledTimes(2);
+    });
   });
 });
