@@ -70,20 +70,23 @@ manda para revisão, "renomeado" reprova pelo tipo, "erro" simula falha no proce
 cd backend
 npm install
 npm test
-sam build
-sam deploy             # stack "mini-kyc" em sa-east-1 (ver samconfig.toml)
+npm run up             # deploy (stack "mini-kyc" em sa-east-1) e escreve o frontend/.env
 ```
 
-O deploy mostra nos *Outputs* as duas Function URLs. Coloque-as no `frontend/.env` com
-`VITE_API_MODE=aws`. O CORS libera só `http://localhost:5173` (parâmetro `FrontendOrigin`).
+O `npm run up` faz o `sam build` e o `sam deploy` e depois escreve no `frontend/.env` as duas
+Function URLs dos *Outputs*, com `VITE_API_MODE=aws`. Reinicie o `npm run dev` do frontend.
+Separados: `npm run deploy` e `npm run env:frontend`. O CORS libera só `http://localhost:5173` (parâmetro `FrontendOrigin`).
 Para receber o alarme por e-mail: `sam deploy --parameter-overrides FrontendOrigin=http://localhost:5173 AlarmEmail=voce@exemplo.com`.
 
 ### Apagar tudo da AWS
 
 ```bash
-aws s3 rm s3://mini-kyc-documents-<conta> --recursive   # o bucket precisa estar vazio
-sam delete --stack-name mini-kyc
+cd backend
+npm run destroy        # esvazia o bucket, roda sam delete e volta o frontend/.env para mock
 ```
+
+O CloudFormation não apaga um bucket com arquivos, por isso o script esvazia o bucket antes.
+Para recriar tudo depois: `npm run up` (as Function URLs mudam, e o `.env` é atualizado sozinho).
 
 ## Decisões e trade-offs
 
