@@ -8,6 +8,19 @@ automáticas de forma assíncrona e devolve um resultado com o motivo.
 no modo mock (dados simulados, nada sai do navegador). O backend roda na AWS sob demanda, com
 `npm run up` (ver "Backend na AWS").
 
+![Tela principal no tema claro: área de envio do documento e lista de verificações com os status Aprovado, Reprovado e Em revisão](docs/images/desktop-claro.png)
+
+<table>
+  <tr>
+    <td width="72%"><img src="docs/images/detalhe-escuro.png" alt="Painel de detalhe no tema escuro, com o resultado Aprovado e a linha do tempo das cinco checagens"></td>
+    <td width="28%"><img src="docs/images/celular.png" alt="Versão de celular no tema escuro, com os botões Tirar foto e Escolher arquivo"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>Detalhe da verificação, tema escuro</sub></td>
+    <td align="center"><sub>Celular, tema escuro</sub></td>
+  </tr>
+</table>
+
 ## Como funciona
 
 ```
