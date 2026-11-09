@@ -30,7 +30,7 @@ function describeCheck(check: CheckResult): string {
     case 'resolution':
       return details.width && details.height ? `${details.width} × ${details.height} px` : 'Não se aplica a PDF';
     case 'duplicate':
-      return outcome === 'PASS' ? 'Arquivo ainda não enviado' : 'Mesmo arquivo de outra verificação';
+      return outcome === 'PASS' ? 'Nenhum envio anterior com o mesmo arquivo' : 'Mesmo arquivo de outra verificação';
     case 'editSignals':
       if (outcome === 'PASS') return 'Nenhuma marca de edição';
       return details.software ? `Editado com ${details.software}` : 'Marcas de edição encontradas';

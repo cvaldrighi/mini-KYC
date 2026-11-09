@@ -147,7 +147,6 @@
   }
   body {
     @apply bg-background text-foreground font-sans antialiased;
-    font-variant-numeric: tabular-nums;
   }
   /* O Tailwind v4 deixa botões com o cursor padrão; aqui volta a "mãozinha" para o que é clicável. */
   button:not(:disabled),
