@@ -28,8 +28,16 @@ O sistema SHALL executar as checagens em ordem fixa (tamanho, tipo real, resolu�
 - **THEN** a verificação fica `MANUAL_REVIEW` com o `reason` dessa checagem
 
 #### Scenario: Falha inesperada
-- **WHEN** uma checagem lança um erro inesperado
+- **WHEN** uma checagem lança um erro inesperado ao analisar o conteúdo do documento
 - **THEN** a verificação fica `MANUAL_REVIEW` com `reason` igual a `PROCESSING_ERROR` e o erro é registrado em log de nível `ERROR`
+
+### Requirement: Falha de infraestrutura
+O sistema MUST tratar falhas ao baixar o arquivo do S3 (permissão, indisponibilidade, rede) como erro de infraestrutura, e não do documento: a invocação falha, a verificação permanece `PENDING` para nova tentativa e o alarme de erros contabiliza a falha. (Comportamento definido a partir do incidente simulado 01.)
+
+#### Scenario: Sem permissão para ler o arquivo
+- **WHEN** a função de processamento recebe `AccessDenied` ao baixar o arquivo
+- **THEN** a invocação falha com o erro registrado em log `ERROR` junto com o `verificationId`
+- **AND** a verificação continua `PENDING`, sem `reason`
 
 ### Requirement: Checagem de tamanho
 O sistema SHALL reprovar documentos maiores que 5 MB ou menores que 10 KB, usando o tamanho informado no evento, antes de baixar o arquivo.
