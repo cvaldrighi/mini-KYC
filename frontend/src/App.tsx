@@ -71,7 +71,7 @@ export default function App() {
             <h2 id="lista-titulo" className="text-[22px] font-bold tracking-tight">
               Verificações
             </h2>
-            <p className="text-[13px] text-muted-foreground">Atualiza sozinho a cada 5 segundos</p>
+            <p className="text-[13px] text-muted-foreground">Atualiza sozinho enquanto houver documentos em análise</p>
           </div>
           <VerificationList
             verifications={verifications}

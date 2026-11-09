@@ -17,7 +17,14 @@ function toError(error: unknown): Error {
 }
 
 /**
- * Busca as verificações e repete a busca a cada `intervalMs`.
+ * Busca as verificações e repete a busca a cada `intervalMs`, mas só enquanto for útil
+ * (polling adaptativo, ver openspec/changes/add-adaptive-polling):
+ * - continua enquanto houver alguma verificação PENDING (o status ainda vai mudar) ou se a
+ *   última busca falhou (para se recuperar sozinho);
+ * - para quando tudo está concluído; `refresh()` (chamado depois de um envio) retoma;
+ * - com a aba em segundo plano, não busca; ao voltar para a aba, busca na hora.
+ *
+ * Detalhes que continuam valendo:
  *
  * - A próxima busca só é agendada quando a anterior termina (setTimeout encadeado, e não
  *   setInterval). Assim, uma resposta lenta não acumula requisições.
@@ -40,22 +47,36 @@ export function useVerifications(
     let latestRequest = 0;
     let timer: ReturnType<typeof setTimeout> | undefined;
 
+    /** Busca agendada: com a aba oculta não faz nada; o retorno à aba busca na hora. */
+    function scheduledLoad() {
+      if (document.visibilityState === 'hidden') return;
+      void load();
+    }
+
     async function load() {
       const request = ++latestRequest;
       clearTimeout(timer);
+      let keepPolling = false;
       try {
         const { items } = await api.listVerifications({ limit: PAGE_SIZE });
         if (!active || request !== latestRequest) return;
         setState({ verifications: items, isLoading: false, error: null });
+        keepPolling = items.some((verification) => verification.status === 'PENDING');
       } catch (error) {
         if (!active || request !== latestRequest) return;
         setState((previous) => ({ ...previous, isLoading: false, error: toError(error) }));
+        keepPolling = true; // tenta de novo até a busca voltar a funcionar
       } finally {
-        if (active && request === latestRequest) {
-          timer = setTimeout(load, intervalMs);
+        if (active && request === latestRequest && keepPolling) {
+          timer = setTimeout(scheduledLoad, intervalMs);
         }
       }
     }
+
+    function onVisibilityChange() {
+      if (document.visibilityState === 'visible') void load();
+    }
+    document.addEventListener('visibilitychange', onVisibilityChange);
 
     loadNowRef.current = () => {
       setState((previous) =>
@@ -68,6 +89,7 @@ export function useVerifications(
     return () => {
       active = false;
       clearTimeout(timer);
+      document.removeEventListener('visibilitychange', onVisibilityChange);
     };
   }, [api, intervalMs]);
 
