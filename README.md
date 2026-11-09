@@ -4,6 +4,10 @@ Projeto de estudo de React + backend serverless na AWS + NoSQL, simulando um flu
 de KYC (*Know Your Customer*): a pessoa envia a foto de um documento, o sistema roda checagens
 automáticas de forma assíncrona e devolve um resultado com o motivo.
 
+**[Ver a demo](https://cvaldrighi.github.io/mini-KYC/)**: o frontend publicado no GitHub Pages,
+no modo mock (dados simulados, nada sai do navegador). O backend roda na AWS sob demanda, com
+`npm run up` (ver "Backend na AWS").
+
 ## Como funciona
 
 ```
@@ -77,6 +81,12 @@ O `npm run up` faz o `sam build` e o `sam deploy` e depois escreve no `frontend/
 Function URLs dos *Outputs*, com `VITE_API_MODE=aws`. Reinicie o `npm run dev` do frontend.
 Separados: `npm run deploy` e `npm run env:frontend`. O CORS libera só `http://localhost:5173` (parâmetro `FrontendOrigin`).
 Para receber o alarme por e-mail: `sam deploy --parameter-overrides FrontendOrigin=http://localhost:5173 AlarmEmail=voce@exemplo.com`.
+
+### Demo no GitHub Pages
+
+O workflow `.github/workflows/deploy-frontend.yml` roda os testes, gera o build no modo mock e
+publica no GitHub Pages a cada mudança do frontend na `master`. Pré-requisito, uma única vez:
+Settings › Pages › Build and deployment › Source: **GitHub Actions**.
 
 ### Apagar tudo da AWS
 
