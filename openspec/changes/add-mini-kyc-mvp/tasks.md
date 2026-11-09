@@ -64,13 +64,13 @@
 
 ## 9. Observabilidade (CloudWatch)
 
-- [ ] 9.1 Configurar Powertools Logger nas três funções com `service` e `verificationId`
-- [ ] 9.2 Registrar resultado e duração de cada checagem e o status final no processamento
-- [ ] 9.3 Publicar métricas `VerificationCompleted` (por `Status`) e `ProcessingDuration` com Powertools Metrics
-- [ ] 9.4 Declarar o dashboard no `template.yaml` (Lambdas, métricas customizadas e widget de erros do Logs Insights)
-- [ ] 9.5 Documentar em `docs/` as queries do Logs Insights (por `verificationId`, contagem por status, erros recentes e checagens mais lentas)
-- [ ] 9.6 Escrever o runbook de investigação em `docs/runbook.md`
-- [ ] 9.7 Simular um incidente (remover `s3:GetObject`), investigar com alarme, dashboard e Logs Insights, corrigir e registrar em `docs/incidente-01.md`
+- [x] 9.1 Configurar Powertools Logger nas três funções com `service` e `verificationId`
+- [x] 9.2 Registrar resultado e duração de cada checagem e o status final no processamento
+- [x] 9.3 Publicar métricas `VerificationCompleted` (por `Status`) e `ProcessingDuration` com Powertools Metrics
+- [x] 9.4 Declarar o dashboard no `template.yaml` (Lambdas, métricas customizadas e widget de erros do Logs Insights)
+- [x] 9.5 Documentar em `docs/` as queries do Logs Insights (por `verificationId`, contagem por status, erros recentes e checagens mais lentas)
+- [x] 9.6 Escrever o runbook de investigação em `docs/runbook.md`
+- [x] 9.7 Simular um incidente (remover `s3:GetObject`), investigar com alarme, dashboard e Logs Insights, corrigir e registrar em `docs/incidente-01.md`
 
 ## 10. Fechamento
 

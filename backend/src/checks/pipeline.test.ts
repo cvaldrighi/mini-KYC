@@ -1,5 +1,5 @@
 import type { CheckName } from '../domain/verification';
-import { lazyFile, runPipeline } from './pipeline';
+import { FileDownloadError, lazyFile, runPipeline } from './pipeline';
 import type { CheckContext, CheckVerdict, VerificationCheck } from './types';
 
 const context: CheckContext = {
@@ -80,6 +80,22 @@ describe('runPipeline', () => {
     expect(after.run).not.toHaveBeenCalled();
   });
 
+  it('repassa a falha no download do arquivo em vez de virar revisão manual', async () => {
+    const failingContext: CheckContext = {
+      ...context,
+      loadFile: lazyFile(() => Promise.reject(new Error('AccessDenied'))),
+    };
+    const fileType = check('fileType', { outcome: 'PASS' });
+    fileType.run.mockImplementation(async (ctx: CheckContext) => {
+      await ctx.loadFile();
+      return { outcome: 'PASS' };
+    });
+
+    await expect(runPipeline([check('size', { outcome: 'PASS' }), fileType], failingContext)).rejects.toBeInstanceOf(
+      FileDownloadError,
+    );
+  });
+
   it('passa o mesmo contexto para todas as checagens', async () => {
     const first = check('size', { outcome: 'PASS' });
     const second = check('fileType', { outcome: 'PASS' });
@@ -110,11 +126,22 @@ describe('lazyFile', () => {
     expect(download).toHaveBeenCalledTimes(1);
   });
 
+  it('marca a falha como FileDownloadError, com a causa original', async () => {
+    const cause = new Error('AccessDenied');
+    const load = lazyFile(() => Promise.reject(cause));
+
+    const error = await load().catch((e: unknown) => e);
+
+    expect(error).toBeInstanceOf(FileDownloadError);
+    expect((error as FileDownloadError).cause).toBe(cause);
+    expect((error as Error).message).toBe('Falha ao baixar o arquivo: AccessDenied');
+  });
+
   it('tenta de novo no próximo pedido se o download falhar', async () => {
     const download = jest.fn().mockRejectedValueOnce(new Error('timeout')).mockResolvedValue(Buffer.from('x'));
     const load = lazyFile(download);
 
-    await expect(load()).rejects.toThrow('timeout');
+    await expect(load()).rejects.toThrow(new FileDownloadError(new Error('timeout')));
     await expect(load()).resolves.toEqual(Buffer.from('x'));
     expect(download).toHaveBeenCalledTimes(2);
   });

@@ -2,6 +2,7 @@ import { InvalidCursorError } from '../../repositories/cursor';
 import type { VerificationRecord } from '../../repositories/verificationRepository';
 import { functionUrlEvent } from '../../test/events';
 import { createHandler } from './handler';
+import { logger } from '../../shared/logger';
 
 const record: VerificationRecord = {
   verificationId: 'v1',
@@ -85,7 +86,7 @@ describe('list-verifications', () => {
   });
 
   it('responde 500 em erro inesperado', async () => {
-    jest.spyOn(console, 'error').mockImplementation(() => {});
+    jest.spyOn(logger, 'error').mockImplementation(() => {});
     const repository = { listByCreatedAt: jest.fn().mockRejectedValue(new Error('timeout')) };
 
     const response = await createHandler({ repository })(functionUrlEvent());

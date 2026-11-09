@@ -1,5 +1,6 @@
 import { functionUrlEvent } from '../../test/events';
 import { createHandler, type Dependencies } from './handler';
+import { logger } from '../../shared/logger';
 
 function setup(overrides: Partial<Dependencies> = {}) {
   const deps = {
@@ -94,7 +95,7 @@ describe('create-verification', () => {
   });
 
   it('não grava nada se a assinatura falhar, e responde 500', async () => {
-    jest.spyOn(console, 'error').mockImplementation(() => {});
+    jest.spyOn(logger, 'error').mockImplementation(() => {});
     const { deps, handler } = setup({ presignUpload: jest.fn().mockRejectedValue(new Error('sem credenciais')) });
 
     const response = await handler(post({ fileName: 'cnh.jpg', contentType: 'image/jpeg' }));
