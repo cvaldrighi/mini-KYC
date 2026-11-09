@@ -15,6 +15,12 @@ describe('App', () => {
     expect(screen.getByRole('heading', { level: 2, name: 'Verificações' })).toBeInTheDocument();
   });
 
+  it('avisa que é uma demonstração no modo mock', () => {
+    render(<App />);
+
+    expect(screen.getByRole('note')).toHaveTextContent('Demonstração com dados simulados.');
+  });
+
   it('tem o botão de troca de tema no cabeçalho', () => {
     render(<App />);
 

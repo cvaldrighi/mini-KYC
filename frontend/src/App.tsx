@@ -1,7 +1,9 @@
 import { useRef, useState } from 'react';
 import { Toaster } from 'sonner';
 import { api } from '@/api';
+import { config } from '@/config';
 import { AppHeader } from '@/components/AppHeader';
+import { DemoBanner } from '@/components/DemoBanner';
 import { StatusAnnouncer } from '@/components/StatusAnnouncer';
 import { UploadPanel, type UploadPanelHandle } from '@/components/UploadPanel';
 import { VerificationSheet } from '@/components/VerificationSheet';
@@ -52,6 +54,7 @@ export default function App() {
 
   return (
     <div className="min-h-dvh">
+      {config.apiMode === 'mock' && <DemoBanner />}
       <AppHeader />
       <main className="mx-auto flex max-w-7xl flex-wrap items-start gap-10 px-5 py-8 sm:px-10 sm:py-10 lg:gap-14">
         <section aria-labelledby="enviar-titulo" className="flex max-w-[460px] flex-[1_1_400px] flex-col gap-5">
