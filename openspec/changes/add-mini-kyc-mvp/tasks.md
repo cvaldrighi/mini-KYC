@@ -70,7 +70,7 @@
 - [x] 9.4 Declarar o dashboard no `template.yaml` (Lambdas, métricas customizadas e widget de erros do Logs Insights)
 - [x] 9.5 Documentar em `docs/` as queries do Logs Insights (por `verificationId`, contagem por status, erros recentes e checagens mais lentas)
 - [x] 9.6 Escrever o runbook de investigação em `docs/runbook.md`
-- [ ] 9.7 Simular um incidente (remover `s3:GetObject`), investigar com alarme, dashboard e Logs Insights, corrigir e registrar em `docs/incidente-01.md`
+- [x] 9.7 Simular um incidente (remover `s3:GetObject`), investigar com alarme, dashboard e Logs Insights, corrigir e registrar em `docs/incidente-01.md`
 
 ## 10. Fechamento
 
