@@ -9,7 +9,11 @@
     "typecheck": "tsc --noEmit",
     "test": "jest",
     "test:watch": "jest --watch",
-    "validate": "sam validate --lint"
+    "validate": "sam validate --lint",
+    "deploy": "sam build && sam deploy",
+    "env:frontend": "./scripts/write-frontend-env.sh",
+    "up": "npm run deploy && npm run env:frontend",
+    "destroy": "./scripts/destroy.sh"
   },
   "dependencies": {
     "@aws-lambda-powertools/logger": "^2.20.0",
