@@ -173,6 +173,21 @@ describe('process-document', () => {
     );
   });
 
+  it('deixa a invocação falhar quando o arquivo não pode ser baixado (incidente 01)', async () => {
+    const { deps, handler } = setupWithRealChecks('valid.jpg');
+    deps.download.mockRejectedValue(Object.assign(new Error('not authorized to perform: s3:GetObject'), { name: 'AccessDenied' }));
+
+    await expect(handler(s3Event('uploads/v1.jpg', 200_000))).rejects.toThrow('Falha ao baixar o arquivo');
+
+    // Não grava revisão manual: a verificação continua PENDING para a próxima tentativa.
+    expect(deps.repository.updateIfPending).not.toHaveBeenCalled();
+    expect(deps.recordCompleted).not.toHaveBeenCalled();
+    expect(logger.error).toHaveBeenCalledWith(
+      'Falha de infraestrutura no processamento; a invocação vai falhar para nova tentativa',
+      expect.objectContaining({ verificationId: 'v1' }),
+    );
+  });
+
   it('deixa a invocação falhar em erro de infraestrutura, para a Lambda tentar de novo', async () => {
     const { deps, handler } = setupWithRealChecks('valid.jpg');
     deps.repository.get.mockRejectedValue(new Error('DynamoDB indisponível'));

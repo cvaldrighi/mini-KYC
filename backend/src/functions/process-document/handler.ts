@@ -1,6 +1,6 @@
 import type { Context, S3Event, S3EventRecord } from 'aws-lambda';
 import { createChecks } from '../../checks';
-import { lazyFile, runPipeline } from '../../checks/pipeline';
+import { lazyFile, runPipeline, type PipelineResult } from '../../checks/pipeline';
 import type { VerificationCheck } from '../../checks/types';
 import type { VerificationStatus } from '../../domain/verification';
 import { HashRepository } from '../../repositories/hashRepository';
@@ -53,12 +53,23 @@ async function processRecord(
   }
 
   const startedAt = now();
-  const result = await runPipeline(checks, {
-    verificationId,
-    declaredContentType: verification.contentType,
-    sizeBytes: record.s3.object.size,
-    loadFile: lazyFile(() => download(bucket, key)),
-  });
+  let result: PipelineResult;
+  try {
+    result = await runPipeline(checks, {
+      verificationId,
+      declaredContentType: verification.contentType,
+      sizeBytes: record.s3.object.size,
+      loadFile: lazyFile(() => download(bucket, key)),
+    });
+  } catch (error) {
+    // Falha de infraestrutura (como não conseguir baixar o arquivo): registra com o id e deixa a
+    // invocação falhar. A verificação continua PENDING, a Lambda tenta de novo e o alarme conta o erro.
+    logger.error('Falha de infraestrutura no processamento; a invocação vai falhar para nova tentativa', {
+      verificationId,
+      error,
+    });
+    throw error;
+  }
   const durationMs = Math.round(now() - startedAt);
 
   if (result.failure) {

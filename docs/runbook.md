@@ -24,8 +24,15 @@ sam logs --stack-name mini-kyc --name ProcessDocumentFunction --tail
 ## Cenário 1: o alarme de erros disparou
 
 Significa que a `process-document` lançou um erro **não tratado**. Por desenho, erros de um
-documento (arquivo corrompido, por exemplo) não chegam aqui: viram revisão manual. Então a
-causa costuma ser **infraestrutura**: permissão, DynamoDB, S3 ou configuração.
+documento (arquivo corrompido, por exemplo) não chegam aqui: viram revisão manual. Já falhas de
+**infraestrutura** (permissão, DynamoDB, S3, inclusive não conseguir baixar o arquivo) fazem a
+invocação falhar, para a Lambda tentar de novo e o alarme contar o erro.
+
+> Até o [incidente 01](incidente-01.md), uma falha ao baixar o arquivo virava revisão manual
+> com `PROCESSING_ERROR`, sem erro de Lambda e sem alarme. Se o alarme não disparar, mas houver
+> logs `ERROR` com "Erro inesperado numa checagem" e um aumento de revisões manuais, confira
+> `error.name` na consulta 3: um erro da AWS (`AccessDenied`, `NoSuchBucket`, `Throttling`...)
+> indica infraestrutura, não documento.
 
 1. Dashboard: confirme no gráfico **Erros** quando começou e se continua acontecendo.
 2. Dashboard: veja o widget **Últimos erros**, ou rode a consulta 3. Anote `error.name` e
@@ -88,6 +95,35 @@ aws s3 cp s3://mini-kyc-documents-<conta>/uploads/<id>.jpg \
           s3://mini-kyc-documents-<conta>/uploads/<id>.jpg \
           --metadata-directive REPLACE
 ```
+
+## Recuperar verificações enviadas para revisão por erro de processamento
+
+Quando uma falha de infraestrutura levou documentos bons para `MANUAL_REVIEW` com
+`PROCESSING_ERROR` (como no incidente 01), eles não são reprocessados sozinhos, porque já não
+estão `PENDING`. Depois de corrigir a causa:
+
+1. Liste os ids afetados no intervalo do incidente:
+   ```
+   filter message = 'Verificação concluída' and reason = 'PROCESSING_ERROR'
+   | fields @timestamp, verificationId
+   ```
+2. Descubra o nome da tabela:
+   ```bash
+   TABLE=$(aws cloudformation describe-stack-resource --stack-name mini-kyc \
+     --logical-resource-id VerificationsTable \
+     --query StackResourceDetail.PhysicalResourceId --output text)
+   ```
+3. Para cada id, volte a verificação para `PENDING`. A condição garante que só verificações com
+   esse motivo são alteradas:
+   ```bash
+   aws dynamodb update-item --table-name "$TABLE" \
+     --key '{"verificationId": {"S": "<id>"}}' \
+     --update-expression 'SET #status = :pending REMOVE reason, checks' \
+     --condition-expression 'reason = :error' \
+     --expression-attribute-names '{"#status": "status"}' \
+     --expression-attribute-values '{":pending": {"S": "PENDING"}, ":error": {"S": "PROCESSING_ERROR"}}'
+   ```
+4. Dispare o processamento de novo (ver "Reprocessar uma verificação" acima).
 
 ## Custos e limpeza
 
