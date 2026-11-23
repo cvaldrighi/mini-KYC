@@ -1,9 +1,9 @@
 import type { HashRepository } from '../repositories/hashRepository';
-import { createDuplicateCheck } from './duplicateCheck';
-import { editSignalsCheck } from './editSignalsCheck';
-import { fileTypeCheck } from './fileTypeCheck';
-import { resolutionCheck } from './resolutionCheck';
-import { sizeCheck } from './sizeCheck';
+import { createDuplicateCheck } from './duplicate/duplicateCheck';
+import { editSignalsCheck } from './edit-signals/editSignalsCheck';
+import { fileTypeCheck } from './file-type/fileTypeCheck';
+import { resolutionCheck } from './resolution/resolutionCheck';
+import { sizeCheck } from './size/sizeCheck';
 import type { VerificationCheck } from './types';
 
 /**

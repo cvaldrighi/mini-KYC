@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
-import type { HashRepository } from '../repositories/hashRepository';
-import type { VerificationCheck } from './types';
+import type { HashRepository } from '../../repositories/hashRepository';
+import type { VerificationCheck } from '../types';
 
 export function sha256(content: Buffer): string {
   return createHash('sha256').update(content).digest('hex');

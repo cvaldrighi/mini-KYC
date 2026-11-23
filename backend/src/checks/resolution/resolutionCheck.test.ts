@@ -1,7 +1,7 @@
-import { readFixture } from '../test/fixtures';
+import { readFixture } from '../../test/fixtures';
 import { readImageDimensions } from './readImageDimensions';
 import { resolutionCheck } from './resolutionCheck';
-import { makeContext } from './test-helpers';
+import { makeContext } from '../test-helpers';
 
 describe('readImageDimensions', () => {
   it.each([
