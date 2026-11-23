@@ -1,6 +1,6 @@
 import { CircleAlert } from 'lucide-react';
 import type { Verification } from '@/domain/verification';
-import { Skeleton } from './ui/skeleton';
+import { Skeleton } from '../ui/skeleton';
 import { ROW_GRID, VerificationRow } from './VerificationRow';
 
 interface VerificationListProps {

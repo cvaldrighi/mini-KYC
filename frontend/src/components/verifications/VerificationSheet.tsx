@@ -4,7 +4,7 @@ import { getReasonMessage } from '@/lib/reasonMessages';
 import { cn } from '@/lib/utils';
 import { ChecksTimeline } from './ChecksTimeline';
 import { StatusBadge } from './StatusBadge';
-import { Sheet, SheetClose, SheetContent, SheetDescription, SheetTitle } from './ui/sheet';
+import { Sheet, SheetClose, SheetContent, SheetDescription, SheetTitle } from '../ui/sheet';
 
 interface VerificationSheetProps {
   verification: Verification | null;

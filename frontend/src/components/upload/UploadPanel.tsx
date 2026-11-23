@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import type { VerificationsApi } from '@/api/types';
 import { useUpload } from '@/hooks/useUpload';
 import { Dropzone, type DropzoneHandle } from './Dropzone';
-import { Progress } from './ui/progress';
+import { Progress } from '../ui/progress';
 
 export interface UploadPanelHandle {
   /** Usado pelo "Enviar outra foto" do detalhe. */
