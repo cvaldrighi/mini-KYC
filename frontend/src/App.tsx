@@ -2,13 +2,10 @@ import { useRef, useState } from 'react';
 import { Toaster } from 'sonner';
 import { api } from '@/api';
 import { config } from '@/config';
-import { AppHeader } from '@/components/AppHeader';
-import { DemoBanner } from '@/components/DemoBanner';
-import { StatusAnnouncer } from '@/components/StatusAnnouncer';
-import { UploadPanel, type UploadPanelHandle } from '@/components/UploadPanel';
-import { VerificationSheet } from '@/components/VerificationSheet';
+import { AppHeader, DemoBanner } from '@/components/layout';
+import { UploadPanel, type UploadPanelHandle } from '@/components/upload';
+import { StatusAnnouncer, VerificationList, VerificationSheet } from '@/components/verifications';
 import type { Verification } from '@/domain/verification';
-import { VerificationList } from '@/components/VerificationList';
 import { useVerifications } from '@/hooks/useVerifications';
 
 /**
