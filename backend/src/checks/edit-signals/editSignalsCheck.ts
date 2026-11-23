@@ -1,5 +1,5 @@
 import exifr from 'exifr';
-import type { VerificationCheck } from '../types';
+import type { VerificationCheck } from '../core/types';
 
 /**
  * Programas de edição de imagem. O celular também grava o campo `Software` (por exemplo

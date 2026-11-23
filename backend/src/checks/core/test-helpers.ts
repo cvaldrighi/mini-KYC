@@ -1,4 +1,4 @@
-import type { AcceptedContentType } from '../domain/verification';
+import type { AcceptedContentType } from '../../domain/verification';
 import type { CheckContext } from './types';
 
 /** Contexto de checagem para testes, com o arquivo já em memória. */

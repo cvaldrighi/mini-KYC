@@ -1,4 +1,4 @@
-import { statusFromOutcome, type CheckName, type CheckResult, type Reason, type VerificationStatus } from '../domain/verification';
+import { statusFromOutcome, type CheckName, type CheckResult, type Reason, type VerificationStatus } from '../../domain/verification';
 import type { CheckContext, CheckVerdict, VerificationCheck } from './types';
 
 export interface PipelineResult {

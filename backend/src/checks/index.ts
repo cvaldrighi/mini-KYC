@@ -4,7 +4,7 @@ import { editSignalsCheck } from './edit-signals/editSignalsCheck';
 import { fileTypeCheck } from './file-type/fileTypeCheck';
 import { resolutionCheck } from './resolution/resolutionCheck';
 import { sizeCheck } from './size/sizeCheck';
-import type { VerificationCheck } from './types';
+import type { VerificationCheck } from './core/types';
 
 /**
  * Ordem do pipeline: das checagens mais baratas para as mais caras. Tamanho não baixa nada;

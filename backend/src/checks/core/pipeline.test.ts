@@ -1,4 +1,4 @@
-import type { CheckName } from '../domain/verification';
+import type { CheckName } from '../../domain/verification';
 import { FileDownloadError, lazyFile, runPipeline } from './pipeline';
 import type { CheckContext, CheckVerdict, VerificationCheck } from './types';
 

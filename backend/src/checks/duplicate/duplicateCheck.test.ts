@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import type { ClaimResult } from '../../repositories/hashRepository';
 import { readFixture } from '../../test/fixtures';
 import { createDuplicateCheck } from './duplicateCheck';
-import { makeContext } from '../test-helpers';
+import { makeContext } from '../core/test-helpers';
 
 function fakeHashes(result: ClaimResult) {
   return { claim: jest.fn().mockResolvedValue(result) };

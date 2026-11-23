@@ -1,5 +1,5 @@
 import { MAX_FILE_SIZE_BYTES, MIN_FILE_SIZE_BYTES } from '../../domain/verification';
-import type { VerificationCheck } from '../types';
+import type { VerificationCheck } from '../core/types';
 
 /** Primeira checagem: usa o tamanho do evento do S3, sem baixar o arquivo. */
 export const sizeCheck: VerificationCheck = {

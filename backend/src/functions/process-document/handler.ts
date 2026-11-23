@@ -1,7 +1,7 @@
 import type { Context, S3Event, S3EventRecord } from 'aws-lambda';
 import { createChecks } from '../../checks';
-import { lazyFile, runPipeline, type PipelineResult } from '../../checks/pipeline';
-import type { VerificationCheck } from '../../checks/types';
+import { lazyFile, runPipeline, type PipelineResult } from '../../checks/core/pipeline';
+import type { VerificationCheck } from '../../checks/core/types';
 import type { VerificationStatus } from '../../domain/verification';
 import { HashRepository } from '../../repositories/hashRepository';
 import { VerificationRepository } from '../../repositories/verificationRepository';

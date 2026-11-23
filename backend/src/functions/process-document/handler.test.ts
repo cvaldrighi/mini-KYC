@@ -1,5 +1,5 @@
 import { createChecks } from '../../checks';
-import type { VerificationCheck } from '../../checks/types';
+import type { VerificationCheck } from '../../checks/core/types';
 import type { VerificationRecord } from '../../repositories/verificationRepository';
 import { s3Event } from '../../test/events';
 import { readFixture } from '../../test/fixtures';

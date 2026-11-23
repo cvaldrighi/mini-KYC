@@ -2,7 +2,7 @@ import type { AcceptedContentType } from '../../domain/verification';
 import { readFixture } from '../../test/fixtures';
 import { detectFileType } from './detectFileType';
 import { fileTypeCheck } from './fileTypeCheck';
-import { makeContext } from '../test-helpers';
+import { makeContext } from '../core/test-helpers';
 
 describe('detectFileType', () => {
   it.each([
