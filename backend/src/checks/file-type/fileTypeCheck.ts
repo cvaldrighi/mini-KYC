@@ -1,6 +1,6 @@
-import { isAcceptedContentType } from '../domain/verification';
+import { isAcceptedContentType } from '../../domain/verification';
 import { detectFileType } from './detectFileType';
-import type { VerificationCheck } from './types';
+import type { VerificationCheck } from '../core/types';
 
 /**
  * Confere o tipo real do arquivo: precisa ser JPEG, PNG ou PDF e bater com o tipo

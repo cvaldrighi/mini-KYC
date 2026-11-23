@@ -1,6 +1,6 @@
-import { readFixture } from '../test/fixtures';
+import { readFixture } from '../../test/fixtures';
 import { editSignalsCheck, isEditingSoftware } from './editSignalsCheck';
-import { makeContext } from './test-helpers';
+import { makeContext } from '../core/test-helpers';
 
 describe('isEditingSoftware', () => {
   it.each(['Adobe Photoshop 25.0 (Macintosh)', 'GIMP 2.10.36', 'Canva', 'Adobe Lightroom 7.0', 'Paint.NET 5.0'])(

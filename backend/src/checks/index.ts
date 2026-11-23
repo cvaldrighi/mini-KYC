@@ -1,10 +1,17 @@
 import type { HashRepository } from '../repositories/hashRepository';
-import { createDuplicateCheck } from './duplicateCheck';
-import { editSignalsCheck } from './editSignalsCheck';
-import { fileTypeCheck } from './fileTypeCheck';
-import { resolutionCheck } from './resolutionCheck';
-import { sizeCheck } from './sizeCheck';
-import type { VerificationCheck } from './types';
+import { createDuplicateCheck } from './duplicate/duplicateCheck';
+import { editSignalsCheck } from './edit-signals/editSignalsCheck';
+import { fileTypeCheck } from './file-type/fileTypeCheck';
+import { resolutionCheck } from './resolution/resolutionCheck';
+import { sizeCheck } from './size/sizeCheck';
+import type { VerificationCheck } from './core/types';
+
+/**
+ * API pública do módulo de checagens. Quem está fora de `checks/` importa só daqui;
+ * a organização interna (core/ e uma pasta por checagem) pode mudar sem afetar quem consome.
+ */
+export { FileDownloadError, lazyFile, runPipeline, type PipelineResult } from './core/pipeline';
+export type { CheckContext, CheckVerdict, VerificationCheck } from './core/types';
 
 /**
  * Ordem do pipeline: das checagens mais baratas para as mais caras. Tamanho não baixa nada;

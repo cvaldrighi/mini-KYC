@@ -1,5 +1,5 @@
 import { sizeCheck } from './sizeCheck';
-import { makeContext } from './test-helpers';
+import { makeContext } from '../core/test-helpers';
 
 const KB = 1024;
 const MB = 1024 * KB;

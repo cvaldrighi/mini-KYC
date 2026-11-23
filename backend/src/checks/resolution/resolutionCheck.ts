@@ -1,6 +1,6 @@
-import { MIN_IMAGE_LONG_SIDE_PX, MIN_IMAGE_SHORT_SIDE_PX } from '../domain/verification';
+import { MIN_IMAGE_LONG_SIDE_PX, MIN_IMAGE_SHORT_SIDE_PX } from '../../domain/verification';
 import { readImageDimensions } from './readImageDimensions';
-import type { VerificationCheck } from './types';
+import type { VerificationCheck } from '../core/types';
 
 /**
  * Exige lado maior >= 600 px e lado menor >= 400 px. Comparar os lados (e não largura e

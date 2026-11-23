@@ -1,4 +1,4 @@
-import type { AcceptedContentType, CheckDetails, CheckName, Reason } from '../domain/verification';
+import type { AcceptedContentType, CheckDetails, CheckName, Reason } from '../../domain/verification';
 
 /** O que cada checagem devolve. `REJECT` e `REVIEW` sempre vêm com motivo. */
 export type CheckVerdict =
